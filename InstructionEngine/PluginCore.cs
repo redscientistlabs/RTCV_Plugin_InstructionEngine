@@ -33,6 +33,8 @@ namespace InstructionEngine
         internal static PluginConnectorRTC connectorRTC = null;
 
         internal static string DataPath => Path.Combine(RTCV.CorruptCore.RtcCore.PluginDir, "InstructionEngine");
+        internal static string InstructionPath => Path.Combine(DataPath, "Instructions");
+        internal static string FormFactorPath => Path.Combine(DataPath, "FormFactors");
 
         public void Dispose()
         {

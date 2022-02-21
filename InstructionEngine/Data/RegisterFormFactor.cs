@@ -11,7 +11,7 @@ namespace InstructionEngine.Data
     [Ceras.MemberConfig(TargetMember.All)]
     public class RegisterFormFactor
     {
-        [Ceras.Exclude]
+        [Exclude]
         static Random rand = new Random();
 
         public const int OUTPUT_REG = 0;

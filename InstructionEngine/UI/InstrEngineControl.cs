@@ -14,11 +14,11 @@ namespace InstructionEngine.UI
     using System.IO;
     using System.Collections.Generic;
     using System.ComponentModel;
-
+    using Newtonsoft.Json;
     public partial class InstrEngineControl : ComponentForm, IColorize
     {
 
-        //BindingList<ComboBoxItem<InstructionDef>> instructions = new BindingList<ComboBoxItem<InstructionDef>>();
+        bool updatingCheckboxes = false;
 
         public InstrEngineControl() 
         {
@@ -44,6 +44,9 @@ namespace InstructionEngine.UI
 
 
             LoadInstructions();
+            cbArchitecture.SelectedIndexChanged += CbArchitecture_SelectedIndexChanged;
+
+
             clbFilters.ItemCheck += ClbFilters_ItemCheck;
             clbFilters.CheckOnClick = true;
 
@@ -77,6 +80,22 @@ namespace InstructionEngine.UI
             //cbVectorLimiterList.DataSource = new datasou
             //cbVectorValueList.DataSource = RtcCore.ValueListBindingSource;
 
+            //string test = JsonConvert.SerializeObject(new FormFactorSavable("PPC_A", 0b000000_11111_00000_00000_00000_000000,
+            //    0b000000_00000_11111_00000_00000_000000,
+            //    0b000000_00000_00000_11111_00000_000000), Formatting.Indented, new FormFactorConverter());
+            //Clipboard.SetText(test);
+            //FormFactorSavable test2 = JsonConvert.DeserializeObject<FormFactorSavable>(test, new FormFactorConverter());
+            //object o = new object();
+
+        }
+
+        private void CbArchitecture_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var arc = InstructionLib.GetArc(cbArchitecture.SelectedItem.ToString());
+            if(arc != null)
+            {
+                UpdateCheckedListBox(arc);
+            }
         }
 
         private void CbOutputForward_SelectedIndexChanged(object sender, EventArgs e)
@@ -101,7 +120,7 @@ namespace InstructionEngine.UI
 
         private void ClbFilters_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            UpdateCheckedFilters();
+            if (!updatingCheckboxes) UpdateCheckedFilters();
         }
 
         private RegisterTarget RTFromString(string str)
@@ -131,28 +150,47 @@ namespace InstructionEngine.UI
         }
 
         void LoadInstructions()
-        {
-            
-            if (Directory.Exists(PluginCore.DataPath))
+        {          
+            if (Directory.Exists(PluginCore.InstructionPath))
             {
-                var instructionDefs = new List<InstructionDef>();
-                var files = Directory.GetFiles(PluginCore.DataPath);
+                var files = Directory.GetFiles(PluginCore.InstructionPath);
+                List<string> arcNames = new List<string>();
                 foreach (var file in files)
                 {
                     var entries = FilterReader.ReadEntries(file);
                     if (entries != null)
                     {
-                        instructionDefs.AddRange(entries);
+                        string arcName = Path.GetFileNameWithoutExtension(file).Trim('_',' ');
+                        arcNames.Add(arcName);
+                        InstructionLib.Add(arcName, entries);                       
                     }
                 }
 
-                foreach (var item in instructionDefs)
+                foreach (var arc in arcNames)
                 {
-                    clbFilters.Items.Add(item, true);
+                    cbArchitecture.Items.Add(arc);
                 }
+
+                cbArchitecture.SelectedIndex = 0;
+                UpdateCheckedListBox(InstructionLib.GetArc(cbArchitecture.SelectedItem.ToString()));
                 UpdateCheckedFilters();
             }
         }
+
+        void UpdateCheckedListBox(List<InstructionDef> instructionDefs)
+        {
+            updatingCheckboxes = true;
+            clbFilters.SuspendLayout();
+            clbFilters.Items.Clear();
+            foreach (var item in instructionDefs)
+            {
+                clbFilters.Items.Add(item, true);
+            }
+            clbFilters.ResumeLayout();
+            updatingCheckboxes = false;
+            UpdateCheckedFilters();
+        }
+
 
         void UpdateCheckedFilters()
         {
