@@ -29,6 +29,7 @@ namespace InstructionEngine.UI
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.clbFilters2 = new System.Windows.Forms.CheckedListBox();
             this.cbArchitecture = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.cbOutputForward = new System.Windows.Forms.ComboBox();
@@ -59,6 +60,7 @@ namespace InstructionEngine.UI
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.groupBox1.Controls.Add(this.clbFilters2);
             this.groupBox1.Controls.Add(this.cbArchitecture);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.cbOutputForward);
@@ -87,6 +89,21 @@ namespace InstructionEngine.UI
             this.groupBox1.TabStop = false;
             this.groupBox1.Tag = "color:dark1";
             // 
+            // clbFilters2
+            // 
+            this.clbFilters2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.clbFilters2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.clbFilters2.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.clbFilters2.ForeColor = System.Drawing.Color.White;
+            this.clbFilters2.FormattingEnabled = true;
+            this.clbFilters2.IntegralHeight = false;
+            this.clbFilters2.Location = new System.Drawing.Point(288, 91);
+            this.clbFilters2.Margin = new System.Windows.Forms.Padding(0);
+            this.clbFilters2.Name = "clbFilters2";
+            this.clbFilters2.Size = new System.Drawing.Size(126, 57);
+            this.clbFilters2.TabIndex = 187;
+            this.clbFilters2.Tag = "color:dark2";
+            // 
             // cbArchitecture
             // 
             this.cbArchitecture.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
@@ -97,7 +114,7 @@ namespace InstructionEngine.UI
             this.cbArchitecture.ForeColor = System.Drawing.Color.White;
             this.cbArchitecture.FormattingEnabled = true;
             this.cbArchitecture.IntegralHeight = false;
-            this.cbArchitecture.Location = new System.Drawing.Point(288, 12);
+            this.cbArchitecture.Location = new System.Drawing.Point(288, 9);
             this.cbArchitecture.MaxDropDownItems = 15;
             this.cbArchitecture.Name = "cbArchitecture";
             this.cbArchitecture.Size = new System.Drawing.Size(126, 21);
@@ -231,10 +248,10 @@ namespace InstructionEngine.UI
             this.clbFilters.ForeColor = System.Drawing.Color.White;
             this.clbFilters.FormattingEnabled = true;
             this.clbFilters.IntegralHeight = false;
-            this.clbFilters.Location = new System.Drawing.Point(288, 38);
+            this.clbFilters.Location = new System.Drawing.Point(288, 33);
             this.clbFilters.Margin = new System.Windows.Forms.Padding(0);
             this.clbFilters.Name = "clbFilters";
-            this.clbFilters.Size = new System.Drawing.Size(126, 104);
+            this.clbFilters.Size = new System.Drawing.Size(126, 57);
             this.clbFilters.TabIndex = 178;
             this.clbFilters.Tag = "color:dark2";
             // 
@@ -413,6 +430,7 @@ namespace InstructionEngine.UI
             this.ClientSize = new System.Drawing.Size(420, 151);
             this.Controls.Add(this.groupBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.MinimumSize = new System.Drawing.Size(420, 151);
             this.Name = "InstrEngineControl";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -448,5 +466,6 @@ namespace InstructionEngine.UI
         public System.Windows.Forms.ComboBox cbOutputForward;
         public System.Windows.Forms.ComboBox cbOutputBack;
         public System.Windows.Forms.ComboBox cbArchitecture;
+        private System.Windows.Forms.CheckedListBox clbFilters2;
     }
 }

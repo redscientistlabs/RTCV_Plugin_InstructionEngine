@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using InstructionEngine.Data.Json;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,15 +11,15 @@ namespace InstructionEngine.Data
 {
     internal class FormFactors
     {
-        private static Dictionary<string, RegisterFormFactor> formFactors =
-            new Dictionary<string, RegisterFormFactor>();
+        private static Dictionary<string, FieldFormFactor> formFactors =
+            new Dictionary<string, FieldFormFactor>();
 
         //private static Dictionary<string, List<RegisterFormFactor>> groups =
         //    new Dictionary<string, string>();
 
 
 
-        public static void InitPPC()
+        public static void Init()
         {
             //formFactors["PPC_A"] =
             //        new RegisterFormFactor(
@@ -61,7 +62,7 @@ namespace InstructionEngine.Data
                     var entries = JsonConvert.DeserializeObject<JsArr>(File.ReadAllText(file), new FormFactorConverter());
                     foreach (var entry in entries.FormFactors)
                     {
-                        formFactors[entry.Name] = (RegisterFormFactor)entry;
+                        formFactors[entry.Name] = (FieldFormFactor)entry;
                         //groupByInfo[entry.Name] = groupName;
                     }
                     //if (entries != null)
@@ -74,9 +75,9 @@ namespace InstructionEngine.Data
             }
         }
 
-        public static RegisterFormFactor GetFormFactor(string key)
+        public static FieldFormFactor GetFormFactor(string key)
         {
-            if(formFactors.TryGetValue(key, out RegisterFormFactor value))
+            if(formFactors.TryGetValue(key, out FieldFormFactor value))
             {
                 return value;
             }
@@ -86,7 +87,7 @@ namespace InstructionEngine.Data
             }
         }
 
-        public static bool TryGetValue(string key, out RegisterFormFactor value)
+        public static bool TryGetValue(string key, out FieldFormFactor value)
         {
             return formFactors.TryGetValue(key, out value);
         }

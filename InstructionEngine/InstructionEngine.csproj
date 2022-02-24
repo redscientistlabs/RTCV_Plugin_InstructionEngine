@@ -189,19 +189,23 @@
   <ItemGroup>
     <Compile Include="Data\EngineMethod.cs" />
     <Compile Include="Data\EngineSpec.cs" />
-    <Compile Include="Data\FormFactorSavable.cs" />
+    <Compile Include="Data\FieldInfo.cs" />
+    <Compile Include="Data\CorruptRules\InstrCorruptRule.cs" />
+    <Compile Include="Data\Json\FormFactorSavable.cs" />
     <Compile Include="Data\Json\FormFactorConverter.cs" />
     <Compile Include="Data\Json\JsArr.cs" />
+    <Compile Include="Data\Json\FieldSavable.cs" />
     <Compile Include="Data\RegisterTarget.cs" />
     <Compile Include="Data\FormFactors.cs" />
     <Compile Include="Data\InstrEngineSettings.cs" />
     <Compile Include="Data\FilterReader.cs" />
     <Compile Include="Data\InstructionLib.cs" />
-    <Compile Include="Data\RegisterFormFactor.cs" />
+    <Compile Include="Data\FieldFormFactor.cs" />
     <Compile Include="Engines\BleedEngine.cs" />
     <Compile Include="Engines\InstrEngine.cs" />
     <Compile Include="PluginCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RHelper.cs" />
     <Compile Include="Routing\PluginConnectorEMU.cs" />
     <Compile Include="Routing\PluginConnectorRTC.cs" />
     <Compile Include="Routing\RoutingConstants.cs" />

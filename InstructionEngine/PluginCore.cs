@@ -45,23 +45,25 @@ namespace InstructionEngine
             if (side == RTCSide.Client)
             {
                 connectorEMU = new PluginConnectorEMU();
-                FormFactors.InitPPC();
+                FormFactors.Init();
 
                 LocalNetCoreRouter.Route(PluginRouting.Endpoints.RTC_SIDE, PluginRouting.Commands.REQUEST_RESYNC, true);
-                var instructionDefs = new List<InstructionDef>();
-                if (Directory.Exists(PluginCore.DataPath))
-                {
-                    var files = Directory.GetFiles(DataPath);
-                    foreach (var file in files)
-                    {
-                        var entries = FilterReader.ReadEntries(file);
-                        if (entries != null)
-                        {
-                            instructionDefs.AddRange(entries);
-                        }
-                    }
-                    InstrEngine.FilterInstructions = instructionDefs;
-                }
+
+
+                //var instructionDefs = new List<InstructionDef>();
+                //if (Directory.Exists(PluginCore.DataPath))
+                //{
+                //    var files = Directory.GetFiles(DataPath);
+                //    foreach (var file in files)
+                //    {
+                //        var entries = FilterReader.ReadEntries(file);
+                //        if (entries != null)
+                //        {
+                //            instructionDefs.AddRange(entries);
+                //        }
+                //    }
+                //    InstrEngine.FilterInstructions = instructionDefs;
+                //}
 
 
 

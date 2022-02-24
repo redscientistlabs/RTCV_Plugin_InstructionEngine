@@ -66,7 +66,7 @@ namespace InstructionEngine.Engines
             set { EngineSpec.Set(nameof(Subtract), value); }
         }
 
-        private static RegisterFormFactor ContainsValue(List<InstructionDef> entries, byte[] bytes)
+        private static FieldFormFactor ContainsValue(List<InstructionDef> entries, byte[] bytes)
         {
             if (bytes == null)
             {
@@ -122,7 +122,7 @@ namespace InstructionEngine.Engines
             }
         }
 
-        public static (RegisterFormFactor formFactor, byte[] bytes) PeekAndGetBytes(List<InstructionDef> entries, MemoryInterface mi, long startAddress, long endAddress)
+        public static (FieldFormFactor formFactor, byte[] bytes) PeekAndGetBytes(List<InstructionDef> entries, MemoryInterface mi, long startAddress, long endAddress)
         {
             if (mi == null)
             {
@@ -174,7 +174,8 @@ namespace InstructionEngine.Engines
             int precision = 4;
 
             List<BlastUnit> blastUnits = new List<BlastUnit>();
-            var fi = FilterInstructions;
+            var filter = FilterInstructions;
+            var filter2 = BleedFilterInstructions;
             int bleedBack = BleedBackwards;
             int bleedForward = BleedForwards;
             var method = Method;
@@ -209,7 +210,7 @@ namespace InstructionEngine.Engines
                     case EngineMethod.Bleed:
                         try
                         {
-                            matchBytes = BleedCorrupt(fi, mi, safeAddress, precision, bleedBack, bleedForward, smart, unique, exclude);
+                            matchBytes = BleedCorrupt(filter, filter2, mi, safeAddress, precision, bleedBack, bleedForward, smart, unique, exclude);
                         }
                         catch (Exception ex)
                         {
@@ -221,7 +222,7 @@ namespace InstructionEngine.Engines
                         }
                         break;
                     case EngineMethod.ReggieRotate:
-                        var data = PeekAndGetBytes(fi, mi, address, address + precision);
+                        var data = PeekAndGetBytes(filter, mi, address, address + precision);
                         if (!(data.formFactor == null || data.bytes == null))
                         {
                             var data2 = BytesToUlong(data.bytes);
@@ -272,7 +273,7 @@ namespace InstructionEngine.Engines
         void ICorruptionEngine.OnDeselect()
         {
             //resync other engines
-            S.GET<CorruptionEngineForm>().ResyncAllEngines();
+            //S.GET<CorruptionEngineForm>().ResyncAllEngines();
         }
 
 

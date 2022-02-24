@@ -53,7 +53,7 @@ namespace InstructionEngine.Data
 
         public static void Sync(Dictionary<string,object> newSpec)
         {
-            spec = newSpec;
+            if(!suspended) spec = newSpec;
         }
 
         public static void Set(string key, object data)

@@ -69,24 +69,30 @@ namespace InstructionEngine.Engines
             set { EngineSpec.Set(nameof(ForwardResTarget), value); }
         }
 
-        private byte[] BleedCorrupt(List<InstructionDef> fi, MemoryInterface mi, long address, int precision, int bleedBack, int bleedForward, bool smart, bool unique, bool exclude)
+        public static List<InstructionDef> BleedFilterInstructions
         {
-            var data = PeekAndGetBytes(fi, mi, address, address + precision);
+            get { return EngineSpec.Get<List<InstructionDef>>(nameof(BleedFilterInstructions)); }
+            set { EngineSpec.Set(nameof(BleedFilterInstructions), value); }
+        }
+
+        private byte[] BleedCorrupt(List<InstructionDef> filter, List<InstructionDef> filter2, MemoryInterface mi, long address, int precision, int bleedBack, int bleedForward, bool smart, bool unique, bool exclude)
+        {
+            var data = PeekAndGetBytes(filter, mi, address, address + precision);
             if(data.formFactor == null || data.bytes == null)
             {
                 return null;
             }
             else
             {
-                return Bleed(fi, mi, data.formFactor, smart, unique, exclude, bleedBack, bleedForward, address, precision, data.bytes);
+                return Bleed(filter2, mi, data.formFactor, smart, unique, exclude, bleedBack, bleedForward, address, precision, data.bytes);
             }
         }
 
-
-        public static MemoryInterface mi;
         static HashSet<ulong> usedRegisters = new HashSet<ulong>();
         //TODO:Refactor
-        private byte[] Bleed(List<InstructionDef> bleedEntries, MemoryInterface mi, RegisterFormFactor initialFormFactor, bool smart, bool unique, bool exclude, int bleedBack, int bleedForward, long addr, int precision, byte[] passthrough)
+        private byte[] Bleed(List<InstructionDef> bleedEntries, MemoryInterface mi, FieldFormFactor initialFormFactor,
+            bool smart, bool unique, bool exclude,
+            int bleedBack, int bleedForward, long addr, int precision, byte[] passthrough)
         {
             usedRegisters.Clear();
             ulong data = BytesToUlong(passthrough); 
@@ -97,7 +103,9 @@ namespace InstructionEngine.Engines
                 ulong[] future = GatherRegisters(addr, bleedEntries, mi, bleedForward, forwardTarget, precision, true);
                 if (exclude)
                 {
-                    var excl = initialFormFactor.Extract(data, RegisterTarget.Inputs);
+                    var excl = initialFormFactor.Extract(data, RegisterTarget.All);
+                    if (excl == null) return null;
+
                     prev = prev.Where(x => !(excl.Contains(x))).ToArray();
                     future = future.Where(x => !(excl.Contains(x))).ToArray();
                 }
@@ -106,8 +114,12 @@ namespace InstructionEngine.Engines
                 {
                     return null;
                 }
+
+
+
                 if(backResTarget == forwardResTarget)
                 {
+                    //Output to all
                     HashSet<ulong> output = new HashSet<ulong>();
                     foreach (var item in prev)
                     {
@@ -140,7 +152,8 @@ namespace InstructionEngine.Engines
                 
                 if (exclude)
                 {
-                    var excl = initialFormFactor.Extract(data, RegisterTarget.Inputs);
+                    var excl = initialFormFactor.Extract(data, RegisterTarget.All);
+                    if (excl == null) return null;
                     prev = prev.Where(x => !(excl.Contains(x))).ToArray();
                     future = future.Where(x => !(excl.Contains(x))).ToArray();
                 }
@@ -214,16 +227,17 @@ namespace InstructionEngine.Engines
 
                     if (ff != null)
                     {
-                        if (FormFactors.TryGetValue(ff, out RegisterFormFactor matchedFF))
+                        if (FormFactors.TryGetValue(ff, out FieldFormFactor matchedFF))
                         {
                             if (matchedFF != null)
                             {
-                                var regs = //OutputFuture?
-                                           matchedFF.Extract(bytesAtAddr, targets);//, Engines.InstrEngine.Subtract ? (ulong)((i + 1) * precision) : 0); //:
-                                //matchedFF.ExtractAll(bytesAtAddr, Engines.InstrEngine.Subtract ? (ulong)((i + 1) * precision) : 0);
-                                foreach (var reg in regs)
+                                var regs = matchedFF.Extract(bytesAtAddr, targets);
+                                if (regs != null)
                                 {
-                                    outRegs.Add(reg);
+                                    foreach (var reg in regs)
+                                    {
+                                        outRegs.Add(reg);
+                                    }
                                 }
                             }
                         }

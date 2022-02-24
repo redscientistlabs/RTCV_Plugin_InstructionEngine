@@ -18,7 +18,6 @@ namespace InstructionEngine
     /// </summary>
     class PluginConnectorRTC : IRoutable
     {
-        bool didInitialConnect = false;
         public PluginConnectorRTC()
         {
             LocalNetCoreRouter.registerEndpoint(this, PluginRouting.Endpoints.RTC_SIDE);
@@ -34,26 +33,7 @@ namespace InstructionEngine
                     EngineSpec.Sync(data);
                     break;
                 case PluginRouting.Commands.REQUEST_RESYNC:
-                    if (didInitialConnect) { EngineSpec.Push(); }
-                    else
-                    {
-                        didInitialConnect = true;
-
-                        //Initial settings
-                        EngineSpec.Suspend();
-                        InstrEngine.Method = EngineMethod.Bleed;
-                        InstrEngine.BleedBackwards = 3;
-                        InstrEngine.BleedForwards = 3;
-                        InstrEngine.Smart = true;
-                        InstrEngine.UseUniqueRegisters = false;
-                        InstrEngine.ExcludeMatchedRegs = false;
-                        InstrEngine.ForwardTarget = RegisterTarget.Inputs;
-                        InstrEngine.BackTarget = RegisterTarget.Output;
-                        InstrEngine.BackResTarget = RegisterTarget.Inputs;
-                        InstrEngine.ForwardResTarget = RegisterTarget.Output;
-                        EngineSpec.ResumeAndPush();
-                        //EngineSpec.Push();
-                    }
+                    S.GET<InstrEngineControl>().Resync();
                     break;
                 default:
                     break;

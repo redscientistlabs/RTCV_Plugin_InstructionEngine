@@ -47,8 +47,12 @@ namespace InstructionEngine.UI
             cbArchitecture.SelectedIndexChanged += CbArchitecture_SelectedIndexChanged;
 
 
-            clbFilters.ItemCheck += ClbFilters_ItemCheck;
             clbFilters.CheckOnClick = true;
+            clbFilters.ItemCheck += ClbFilters_ItemCheck;
+
+            clbFilters2.CheckOnClick = true;
+            clbFilters2.ItemCheck += ClbFilters2_ItemCheck;
+
 
             cbBackTarg.Items.Add(RegisterTarget.All.ToString());
             cbForwardTarg.Items.Add(RegisterTarget.All.ToString());
@@ -89,6 +93,26 @@ namespace InstructionEngine.UI
 
         }
 
+        internal void Resync()
+        {
+            EngineSpec.Suspend();
+            InstrEngine.BleedForwards = (int)nmBleedForward.Value;
+            InstrEngine.BleedBackwards = (int)nmBleedBack.Value;
+            InstrEngine.Smart = cbOutputFuture.Checked;
+            InstrEngine.UseUniqueRegisters = cbUniqueRegisters.Checked;
+            InstrEngine.ExcludeMatchedRegs = cbExclusive.Checked;
+            InstrEngine.Method = EMFromString(cbInstrMethod.SelectedItem.ToString());
+
+            InstrEngine.ForwardTarget = RTFromString(cbForwardTarg.SelectedItem.ToString());
+            InstrEngine.BackTarget = RTFromString(cbBackTarg.SelectedItem.ToString());
+            InstrEngine.ForwardResTarget = RTFromString(cbOutputForward.SelectedItem.ToString());
+            InstrEngine.BackResTarget = RTFromString(cbOutputBack.SelectedItem.ToString());
+            UpdateCheckedFilters();
+            UpdateCheckedFilters2();
+
+            EngineSpec.ResumeAndPush();
+        }
+
         private void CbArchitecture_SelectedIndexChanged(object sender, EventArgs e)
         {
             var arc = InstructionLib.GetArc(cbArchitecture.SelectedItem.ToString());
@@ -120,7 +144,18 @@ namespace InstructionEngine.UI
 
         private void ClbFilters_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            if (!updatingCheckboxes) UpdateCheckedFilters();
+            if (!updatingCheckboxes)
+            {
+                UpdateCheckedFilters();
+            }
+        }
+
+        private void ClbFilters2_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            if (!updatingCheckboxes)
+            {
+                UpdateCheckedFilters2();
+            }
         }
 
         private RegisterTarget RTFromString(string str)
@@ -180,6 +215,7 @@ namespace InstructionEngine.UI
         void UpdateCheckedListBox(List<InstructionDef> instructionDefs)
         {
             updatingCheckboxes = true;
+            //Filters 1
             clbFilters.SuspendLayout();
             clbFilters.Items.Clear();
             foreach (var item in instructionDefs)
@@ -187,8 +223,19 @@ namespace InstructionEngine.UI
                 clbFilters.Items.Add(item, true);
             }
             clbFilters.ResumeLayout();
+
+            //Filters 2
+            clbFilters2.SuspendLayout();
+            clbFilters2.Items.Clear();
+            foreach (var item in instructionDefs)
+            {
+                clbFilters2.Items.Add(item, true);
+            }
+            clbFilters2.ResumeLayout();
+
             updatingCheckboxes = false;
             UpdateCheckedFilters();
+            UpdateCheckedFilters2();
         }
 
 
@@ -200,6 +247,16 @@ namespace InstructionEngine.UI
                 instrs.Add((InstructionDef)instr);
             }
             InstrEngine.FilterInstructions = instrs;
+        }
+
+        void UpdateCheckedFilters2()
+        {
+            List<InstructionDef> instrs = new List<InstructionDef>();
+            foreach (var instr in clbFilters2.CheckedItems)
+            {
+                instrs.Add((InstructionDef)instr);
+            }
+            InstrEngine.BleedFilterInstructions = instrs;
         }
 
 
@@ -239,21 +296,7 @@ namespace InstructionEngine.UI
 
         private void bDebugPush_Click(object sender, EventArgs e)
         {
-            EngineSpec.Suspend();
-            InstrEngine.BleedForwards = (int)nmBleedForward.Value;
-            InstrEngine.BleedBackwards = (int)nmBleedBack.Value;
-            InstrEngine.Smart = cbOutputFuture.Checked;
-            InstrEngine.UseUniqueRegisters = cbUniqueRegisters.Checked;
-            InstrEngine.ExcludeMatchedRegs = cbExclusive.Checked;
-            InstrEngine.Method = EngineMethod.Bleed;
-
-            InstrEngine.ForwardTarget = RTFromString(cbForwardTarg.SelectedItem.ToString());
-            InstrEngine.BackTarget = RTFromString(cbBackTarg.SelectedItem.ToString());
-            InstrEngine.ForwardResTarget = RTFromString(cbOutputForward.SelectedItem.ToString());
-            InstrEngine.BackResTarget = RTFromString(cbOutputBack.SelectedItem.ToString());
-            UpdateCheckedFilters();
-
-            EngineSpec.ResumeAndPush();
+            Resync();
         }
 
         private void cbUniqueRegisters_CheckedChanged(object sender, EventArgs e)
