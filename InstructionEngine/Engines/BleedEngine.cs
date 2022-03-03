@@ -77,14 +77,14 @@ namespace InstructionEngine.Engines
 
         private byte[] BleedCorrupt(List<InstructionDef> filter, List<InstructionDef> filter2, MemoryInterface mi, long address, int precision, int bleedBack, int bleedForward, bool smart, bool unique, bool exclude)
         {
-            var data = PeekAndGetBytes(filter, mi, address, address + precision);
-            if(data.formFactor == null || data.bytes == null)
+            var data = PeekAndGetData(filter, mi, address, address + precision);
+            if(data == null)
             {
                 return null;
             }
             else
             {
-                return Bleed(filter2, mi, data.formFactor, smart, unique, exclude, bleedBack, bleedForward, address, precision, data.bytes);
+                return Bleed(filter2, mi, data.FormFactor, smart, unique, exclude, bleedBack, bleedForward, address, precision, data.OriginalBytes);
             }
         }
 
@@ -114,9 +114,6 @@ namespace InstructionEngine.Engines
                 {
                     return null;
                 }
-
-
-
                 if(backResTarget == forwardResTarget)
                 {
                     //Output to all

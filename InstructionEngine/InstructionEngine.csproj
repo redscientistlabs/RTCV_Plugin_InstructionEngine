@@ -187,10 +187,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\CorruptCooking\Attributes\ChefActionInfoAttribute.cs" />
+    <Compile Include="Data\CorruptCooking\Attributes\ChefActionParamAttribute.cs" />
+    <Compile Include="Data\CorruptCooking\Chef.cs" />
+    <Compile Include="Data\CorruptCooking\ChefAssistant.cs" />
+    <Compile Include="Data\CorruptCooking\CookingClass.cs" />
+    <Compile Include="Data\CorruptCooking\Ingredient.cs" />
+    <Compile Include="Data\CorruptCooking\IngredientList.cs" />
+    <Compile Include="Data\CorruptCooking\RecipeStep.cs" />
+    <Compile Include="Data\CorruptCooking\TargetData.cs" />
     <Compile Include="Data\EngineMethod.cs" />
     <Compile Include="Data\EngineSpec.cs" />
     <Compile Include="Data\FieldInfo.cs" />
-    <Compile Include="Data\CorruptRules\InstrCorruptRule.cs" />
+    <Compile Include="Data\CorruptCooking\Recipe.cs" />
     <Compile Include="Data\Json\FormFactorSavable.cs" />
     <Compile Include="Data\Json\FormFactorConverter.cs" />
     <Compile Include="Data\Json\JsArr.cs" />
@@ -248,6 +257,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\Bizhawk-Vanguard\Real-Time Corruptor\BizHawk_RTC\packages\Fody.6.4.0\build\Fody.targets" Condition="Exists('..\..\Bizhawk-Vanguard\Real-Time Corruptor\BizHawk_RTC\packages\Fody.6.4.0\build\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

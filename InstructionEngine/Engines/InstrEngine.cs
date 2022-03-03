@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using InstructionEngine.Data;
 using RTCV.CorruptCore.Extensions;
+using InstructionEngine.Data.CorruptCooking;
 
 namespace InstructionEngine.Engines
 {
@@ -66,7 +67,7 @@ namespace InstructionEngine.Engines
             set { EngineSpec.Set(nameof(Subtract), value); }
         }
 
-        private static FieldFormFactor ContainsValue(List<InstructionDef> entries, byte[] bytes)
+        private static InstructionDef ContainsValue(List<InstructionDef> entries, byte[] bytes)
         {
             if (bytes == null)
             {
@@ -80,7 +81,7 @@ namespace InstructionEngine.Engines
                 {
                     if (e.Matches(data))
                     {
-                        return FormFactors.GetFormFactor(e.FormFactor);
+                        return e;// FormFactors.GetFormFactor(e.FormFactor);
                     }
                 }
                 return null;
@@ -91,7 +92,7 @@ namespace InstructionEngine.Engines
             }
         }
 
-        private static ulong BytesToUlong(byte[] byteRef)
+        public static ulong BytesToUlong(byte[] byteRef)
         {
             var bytes = (byte[])byteRef.Clone();
             //Fun switch of fun, but is faster for most paths than resizing to 8 bytes
@@ -122,7 +123,7 @@ namespace InstructionEngine.Engines
             }
         }
 
-        public static (FieldFormFactor formFactor, byte[] bytes) PeekAndGetBytes(List<InstructionDef> entries, MemoryInterface mi, long startAddress, long endAddress)
+        public static TargetData PeekAndGetData(List<InstructionDef> entries, MemoryInterface mi, long startAddress, long endAddress)
         {
             if (mi == null)
             {
@@ -132,7 +133,7 @@ namespace InstructionEngine.Engines
             //If we go outside of the domain, just return false
             if (endAddress > mi.Size)
             {
-                return (null,null);
+                return null;
             }
 
             //Find the precision
@@ -152,13 +153,15 @@ namespace InstructionEngine.Engines
             }
 
             //If the limiter contains the value we peeked, return true
-            var ff =  ContainsValue(entries, values);
-            if (ff != null)
+            var instr =  ContainsValue(entries, values);
+
+
+            if (instr != null)
             {
-                return (ff, values);
+                return new TargetData(instr, BytesToUlong(values), values, mi, startAddress);
             }
 
-             return (null, null);
+             return null;
         }
 
 
@@ -222,12 +225,12 @@ namespace InstructionEngine.Engines
                         }
                         break;
                     case EngineMethod.ReggieRotate:
-                        var data = PeekAndGetBytes(filter, mi, address, address + precision);
-                        if (!(data.formFactor == null || data.bytes == null))
+                        var data = PeekAndGetData(filter, mi, address, address + precision);
+                        if (data != null)
                         {
-                            var data2 = BytesToUlong(data.bytes);
+                            var data2 = data.Data;
 
-                            data2 = data.formFactor.Inject(data2, RegisterTarget.All, data.formFactor.ExtractAll(data2), true);
+                            data2 = data.FormFactor.Inject(data2, RegisterTarget.All, data.FormFactor.ExtractAll(data2), true);
 
 
                             byte[] outValue = BitConverter.GetBytes(data2);
@@ -260,6 +263,25 @@ namespace InstructionEngine.Engines
 
             }
             return blastUnits.Count > 0? new BlastLayer(blastUnits) : null;
+        }
+
+        public static byte[] UlongToBytes(ulong data, int precision)
+        {
+            byte[] outValue = BitConverter.GetBytes(data);
+
+            Array.Resize(ref outValue, precision);
+
+            if (outValue.Length < precision)
+            {
+                outValue = outValue.PadLeft(precision);
+            }
+            else if (outValue.Length > precision)
+            {
+                outValue.FlipBytes(); //Flip the bytes (stored as little endian)
+                Array.Resize(ref outValue, precision); //Truncate
+                outValue.FlipBytes(); //Flip them back
+            }
+            return outValue;
         }
 
 

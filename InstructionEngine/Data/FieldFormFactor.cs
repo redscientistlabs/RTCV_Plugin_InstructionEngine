@@ -17,6 +17,9 @@ namespace InstructionEngine.Data
         int outputRegisterIndex = -1;
         public FieldInfo OutputRegister => outputRegisterIndex > -1 ? registers[outputRegisterIndex] : null;
         int[] inputRegisterIndices = null;
+
+        public HashSet<string> Tags { get; private set; } = new HashSet<string>();
+
         public List<FieldInfo> InputRegisters
         {
             get
@@ -40,6 +43,8 @@ namespace InstructionEngine.Data
 
         private FieldInfo[] registers;
         private FieldInfo[] fields;
+
+        public FieldInfo[] Registers => registers;
         public FieldFormFactor() { }
         //public RegisterFormFactor(ulong outputRegister, params ulong[] registers)
         //{
@@ -104,7 +109,19 @@ namespace InstructionEngine.Data
             return registers.Where(x => x.HasTag(tag)).ToArray();
         }
 
-        
+        public bool HasTag(string tag)
+        {
+            return Tags.Contains(tag);
+        }
+
+        public bool RegistersHasTag(string tag)
+        {
+            foreach (var register in registers)
+            {
+                if (register.HasTag(tag)) return true;
+            }
+            return false;
+        }
 
         public ulong InjectAt(int registerId, ulong data, ulong registerData)
         {
@@ -225,6 +242,19 @@ namespace InstructionEngine.Data
                 ret[i] = regs[i].Extract(data);
             }
             return ret;
+        }
+
+        public ulong? ExtractByName(ulong data, string name)
+        {
+            var regs = registers.FirstOrDefault(x => x.Name == name);
+            if(regs != null)
+            {
+                return regs.Extract(data);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public ulong[] ExtractAllMatching(ulong data, string tag, int matchSize)
