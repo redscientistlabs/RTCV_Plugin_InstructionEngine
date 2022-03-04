@@ -213,6 +213,7 @@
     <Compile Include="Data\FieldFormFactor.cs" />
     <Compile Include="Engines\BleedEngine.cs" />
     <Compile Include="Engines\InstrEngine.cs" />
+    <Compile Include="MathExtensions.cs" />
     <Compile Include="PluginCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RHelper.cs" />

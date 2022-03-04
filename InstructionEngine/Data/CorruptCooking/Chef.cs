@@ -85,6 +85,8 @@ namespace InstructionEngine.Data.CorruptCooking
         [ChefActionParam(1, "To Field", typeof(string))]
         [ChefActionParam(2, "AppendBits", typeof(int))]
         [ChefActionParam(3, "If Bit", typeof(int))]
+        [ChefActionParam(4, "If Bit 2", typeof(int))]
+        //[ChefActionParam(5, "Divisor", typeof(int))]
         //[ChefActionParam(2, "Warp Min", typeof(int))]
         //[ChefActionParam(3, "Warp Max", typeof(int))]
         public static bool AddressWarp(Recipe recipe, string[] parameters)
@@ -101,7 +103,9 @@ namespace InstructionEngine.Data.CorruptCooking
             if (toField is null) return false;
 
             int appendBits = int.Parse(parameters[2]);
-            int ifBit = int.Parse(parameters[3]);
+            int absoluteAddressBit = int.Parse(parameters[3]);
+            int linkBit = int.Parse(parameters[4]);
+            //int divisor = int.Parse(parameters[5]).AssureNonZero();
 
             var targetsWithTag = recipe.FoundTargets.Where(x => x.HasRegisterNamed(fromRegName)).ToArray();
             if (targetsWithTag.Length == 0) return false;
@@ -113,23 +117,38 @@ namespace InstructionEngine.Data.CorruptCooking
             var from = targetsWithTag[rand.Next(targetCount)];
             //long? extr = from.FormFactor.ExtractByName(from.Data, fromRegTag);
             //long? extr = from.FormFactor.ExtractByName(from.Data, fromRegTag);
-            if (ifBit > 0 )
+
+            void DoWarp()
             {
-                if (BitHelper.IsSet(from.Data, ifBit))// && BitHelper.IsSet(from.Data, ifBit)*/)
+                long fromData = from.GetRegisterNamed(fromRegName).ExtractSignedValue(from.Data, appendBits);
+                fromData += (to.Address - from.Address);
+                to.Data = toField.InjectSigned(to.Data, fromData, appendBits);
+            }
+
+            if (absoluteAddressBit > 0 )
+            {
+                if (BitHelper.IsSet(from.Data, absoluteAddressBit))// && BitHelper.IsSet(from.Data, ifBit)*/)
                 {
-                    if (BitHelper.IsSet(to.Data, ifBit))
+                    if (BitHelper.IsSet(to.Data, absoluteAddressBit))
                     {
-                        long fromData = from.GetRegisterNamed(fromRegName).ExtractSignedValue(from.Data, appendBits);
-                        //string fds = Convert.ToString((long)fromData, 2);
-                        //string tds = Convert.ToString((long)to.Data, 2);
-
-                        fromData += (to.Address - from.Address); //Add diff between addresses
-                                                                 //string fds2 = Convert.ToString((long)fromData, 2);
-                                                                 //long diff = (to.Address - from.Address);
-
-                        to.Data = toField.InjectSigned(to.Data, fromData, appendBits);
-                        //string tds2 = Convert.ToString((long)to.Data, 2);
-                        //new object();
+                        //LinkBit
+                        if (linkBit > 0)
+                        {
+                            if (BitHelper.IsSet(from.Data, linkBit) && BitHelper.IsSet(to.Data, linkBit))
+                            {
+                                DoWarp();
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            DoWarp();
+                            return true;
+                        }
                     }
                     else
                     {
@@ -140,6 +159,20 @@ namespace InstructionEngine.Data.CorruptCooking
                 else
                 {
                     to.Data = toField.Inject(to.Data, from.GetRegisterNamed(fromRegName).Extract(from.Data));
+                    return true;
+                }
+            }
+            else if(linkBit > 0)
+            {
+                if (BitHelper.IsSet(from.Data, linkBit) && BitHelper.IsSet(to.Data, linkBit))// && BitHelper.IsSet(from.Data, ifBit)*/)
+                {
+
+                    DoWarp();
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             else
