@@ -24,7 +24,7 @@ namespace InstructionEngine.Data
         const char CHAR_FLAG = '@';
 
         
-        //private HashSet<ulong> usedRegisters = new HashSet<ulong>();
+        //private HashSet<long> usedRegisters = new HashSet<long>();
 
         //private int searchback = 8;
 
@@ -198,11 +198,11 @@ namespace InstructionEngine.Data
         }
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)] //Inline hint (does it do anything here? idk)
-        private static ulong CharToUlongHex(char c)
+        private static long CharTolongHex(char c)
         {
             //Ascii format
             int i = (int)c;
-            return (ulong)(i - ((i <= 57) ? 48 : 55)); //optimized, values are guaranteed
+            return (long)(i - ((i <= 57) ? 48 : 55)); //optimized, values are guaranteed
         }
 
         ////Gets precision of a line, uncomment if non-byte sized lists become a thing
@@ -228,11 +228,11 @@ namespace InstructionEngine.Data
         private static InstructionDef ParseHex(string line, string formFactor, string name)
         {
             //Could be refactored and merged with ParseBin probably
-            const ulong digitMask = 0b1111; //ulong mask for one hex digit
+            const long digitMask = 0b1111; //long mask for one hex digit
 
-            ulong template = 0UL;
+            long template = 0L;
 
-            ulong reserved = 0UL;
+            long reserved = 0L;
 
             //At this point we know only valid characters are in the line
 
@@ -245,7 +245,7 @@ namespace InstructionEngine.Data
                 else //is a Constant
                 {
                     //line[j] is guaranteed to be Hex characters here
-                    template |= CharToUlongHex(line[j]) << curLeftShift; //Convert char to ulong and shift
+                    template |= CharTolongHex(line[j]) << curLeftShift; //Convert char to long and shift
                     reserved |= digitMask << curLeftShift; //Also add to reserved mask
                 }
                 curLeftShift += 4; //add half byte shift
@@ -255,8 +255,8 @@ namespace InstructionEngine.Data
 
         private static InstructionDef ParseBin(string line, string formFactor, string name)
         {
-            ulong template = 0UL;
-            ulong reserved = 0UL;
+            long template = 0;
+            long reserved = 0;
 
             //At this point we know only valid characters are in the line
 
@@ -269,8 +269,8 @@ namespace InstructionEngine.Data
                 else //Constant
                 {
                     //line[j] is guaranteed to be '1' or '0' here
-                    template |= ((ulong)line[j] - 48UL) << curLeftShift; //Convert char to ulong and shift
-                    reserved |= 1UL << curLeftShift; //Also add to reserved mask
+                    template |= ((long)line[j] - 48) << curLeftShift; //Convert char to long and shift
+                    reserved |= 1L << curLeftShift; //Also add to reserved mask
                 }
 
                 curLeftShift++;

@@ -81,44 +81,97 @@ namespace InstructionEngine.Data.CorruptCooking
         //}
 
         [ChefActionInfo("AddressWarp")]
-        [ChefActionParam(0, "From Reg.", typeof(string))]
-        [ChefActionParam(1, "To Reg", typeof(string))]
+        [ChefActionParam(0, "From Field.", typeof(string))]
+        [ChefActionParam(1, "To Field", typeof(string))]
+        [ChefActionParam(2, "AppendBits", typeof(int))]
+        [ChefActionParam(3, "If Bit", typeof(int))]
         //[ChefActionParam(2, "Warp Min", typeof(int))]
         //[ChefActionParam(3, "Warp Max", typeof(int))]
         public static bool AddressWarp(Recipe recipe, string[] parameters)
         {
-            int targCount = recipe.FoundTargets.Count;
-            if (targCount == 0) return false;
+            int targetCount = recipe.FoundTargets.Count;
+            if (targetCount == 0) return false;
 
-            string fromRegTag = parameters[0];
+            string fromRegName = parameters[0];
 
-            string toRegTag = parameters[1];
-            if (!recipe.FilterTarget.HasRegister(toRegTag)) return false;
+            string toRegName = parameters[1];
+            if (recipe.FilterTarget is null) return false;
+            var to = recipe.FilterTarget;
+            var toField = to.GetRegisterNamed(toRegName);
+            if (toField is null) return false;
 
-            var ftarg = recipe.FoundTargets.Where(x => x.HasRegister(fromRegTag)).ToArray();
-            if (ftarg.Length == 0) return false;
-            targCount = ftarg.Length;
+            int appendBits = int.Parse(parameters[2]);
+            int ifBit = int.Parse(parameters[3]);
+
+            var targetsWithTag = recipe.FoundTargets.Where(x => x.HasRegisterNamed(fromRegName)).ToArray();
+            if (targetsWithTag.Length == 0) return false;
+            targetCount = targetsWithTag.Length;
 
             //int min = int.Parse(parameters[2]);
             //int max = int.Parse(parameters[3]);
 
+            var from = targetsWithTag[rand.Next(targetCount)];
+            //long? extr = from.FormFactor.ExtractByName(from.Data, fromRegTag);
+            //long? extr = from.FormFactor.ExtractByName(from.Data, fromRegTag);
+            if (ifBit > 0 )
+            {
+                if (BitHelper.IsSet(from.Data, ifBit))// && BitHelper.IsSet(from.Data, ifBit)*/)
+                {
+                    if (BitHelper.IsSet(to.Data, ifBit))
+                    {
+                        long fromData = from.GetRegisterNamed(fromRegName).ExtractSignedValue(from.Data, appendBits);
+                        //string fds = Convert.ToString((long)fromData, 2);
+                        //string tds = Convert.ToString((long)to.Data, 2);
 
-            var from = ftarg[rand.Next(targCount)];
-            ulong extr = from.FormFactor.ExtractByName(from.Data, fromRegTag);
-            if(0b10000000000000ul )
-            
-            long diff = recipe.FilterTarget
+                        fromData += (to.Address - from.Address); //Add diff between addresses
+                                                                 //string fds2 = Convert.ToString((long)fromData, 2);
+                                                                 //long diff = (to.Address - from.Address);
+
+                        to.Data = toField.InjectSigned(to.Data, fromData, appendBits);
+                        //string tds2 = Convert.ToString((long)to.Data, 2);
+                        //new object();
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                }
+                else
+                {
+                    to.Data = toField.Inject(to.Data, from.GetRegisterNamed(fromRegName).Extract(from.Data));
+                }
+            }
+            else
+            {
+                to.Data = toField.Inject(to.Data, from.GetRegisterNamed(fromRegName).Extract(from.Data));
+            }
+
+            //fromData += (to.Address - from.Address); //Add diff between addresses
+            //to.Data = toField.InjectSigned(to.Data, fromData, appendBits);
+
+
+            //if(0b10000000000000ul )
+
+            //long diff = recipe.FilterTarget
 
 
             return true;
         }
-
+        [ChefActionInfo("ResetFoundTargets")]
         public static bool ResetFoundTargets(Recipe recipe, string[] parameters)
         {
             recipe.FoundTargets.Clear();
             return true;
         }
 
+        /// <summary>
+        /// Resets all targets
+        /// </summary>
+        /// <param name="recipe"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        [ChefActionInfo("ResetAllTargets")]
         public static bool ResetAllTargets(Recipe recipe, string[] parameters)
         {
             recipe.FoundTargets.Clear();

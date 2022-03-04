@@ -88,19 +88,19 @@ namespace InstructionEngine.Engines
             }
         }
 
-        static HashSet<ulong> usedRegisters = new HashSet<ulong>();
+        static HashSet<long> usedRegisters = new HashSet<long>();
         //TODO:Refactor
         private byte[] Bleed(List<InstructionDef> bleedEntries, MemoryInterface mi, FieldFormFactor initialFormFactor,
             bool smart, bool unique, bool exclude,
             int bleedBack, int bleedForward, long addr, int precision, byte[] passthrough)
         {
             usedRegisters.Clear();
-            ulong data = BytesToUlong(passthrough); 
+            long data = BytesTolong(passthrough); 
 
             if (smart)
             {
-                ulong[] prev = GatherRegisters(addr, bleedEntries, mi, bleedBack, backTarget, precision, false);
-                ulong[] future = GatherRegisters(addr, bleedEntries, mi, bleedForward, forwardTarget, precision, true);
+                long[] prev = GatherRegisters(addr, bleedEntries, mi, bleedBack, backTarget, precision, false);
+                long[] future = GatherRegisters(addr, bleedEntries, mi, bleedForward, forwardTarget, precision, true);
                 if (exclude)
                 {
                     var excl = initialFormFactor.Extract(data, RegisterTarget.All);
@@ -117,7 +117,7 @@ namespace InstructionEngine.Engines
                 if(backResTarget == forwardResTarget)
                 {
                     //Output to all
-                    HashSet<ulong> output = new HashSet<ulong>();
+                    HashSet<long> output = new HashSet<long>();
                     foreach (var item in prev)
                     {
                         output.Add(item);
@@ -144,8 +144,8 @@ namespace InstructionEngine.Engines
             }
             else
             {
-                ulong[] prev = GatherRegisters(addr, bleedEntries, mi, bleedBack, backTarget, precision, false);
-                ulong[] future = GatherRegisters(addr, bleedEntries, mi, bleedForward, forwardTarget, precision, true);
+                long[] prev = GatherRegisters(addr, bleedEntries, mi, bleedBack, backTarget, precision, false);
+                long[] future = GatherRegisters(addr, bleedEntries, mi, bleedForward, forwardTarget, precision, true);
                 
                 if (exclude)
                 {
@@ -155,7 +155,7 @@ namespace InstructionEngine.Engines
                     future = future.Where(x => !(excl.Contains(x))).ToArray();
                 }
 
-                HashSet<ulong> output = new HashSet<ulong>();
+                HashSet<long> output = new HashSet<long>();
                 foreach (var item in prev)
                 {
                     output.Add(item);
@@ -191,9 +191,9 @@ namespace InstructionEngine.Engines
             return outValue;
         }
 
-        private static ulong[] GatherRegisters(long addr, List<InstructionDef> bleedEntries, MemoryInterface mi, int bleedAmt, RegisterTarget targets, int precision, bool forwards)
+        private static long[] GatherRegisters(long addr, List<InstructionDef> bleedEntries, MemoryInterface mi, int bleedAmt, RegisterTarget targets, int precision, bool forwards)
         {
-            var outRegs = new HashSet<ulong>();
+            var outRegs = new HashSet<long>();
             for (int i = 0; i < bleedAmt; i++)
             {
                 addr += forwards? precision : -precision;
@@ -211,7 +211,7 @@ namespace InstructionEngine.Engines
                         bytes = bytes.FlipBytes();
                     }
 
-                    ulong bytesAtAddr = BytesToUlong(bytes);
+                    long bytesAtAddr = BytesTolong(bytes);
                     string ff = null;
                     for (int j = 0; j < bleedEntries.Count; j++)
                     {

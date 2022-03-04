@@ -15,6 +15,8 @@ namespace InstructionEngine.UI
     using System.Collections.Generic;
     using System.ComponentModel;
     using Newtonsoft.Json;
+    using InstructionEngine.Data.CorruptCooking;
+
     public partial class InstrEngineControl : ComponentForm, IColorize
     {
 
@@ -32,8 +34,14 @@ namespace InstructionEngine.UI
             //cbVectorValueList.ValueMember = "Value";
             //cbVectorLimiterList.ValueMember = "Value";
             cbInstrMethod.DataSource = null;
-            cbInstrMethod.Items.Add(EngineMethod.Bleed.ToString());
-            cbInstrMethod.Items.Add(EngineMethod.ReggieRotate.ToString());
+            var methodNames = Enum.GetNames(typeof(EngineMethod));
+            foreach (var mname in methodNames)
+            {
+                cbInstrMethod.Items.Add(mname);
+            }
+            //cbInstrMethod.Items.Add(EngineMethod.Bleed.ToString());
+            //cbInstrMethod.Items.Add(EngineMethod.ReggieRotate.ToString());
+            //cbInstrMethod.Items.Add(EngineMethod.ReggieRotate.ToString());
             cbInstrMethod.SelectedIndex = 0;
 
 
@@ -90,8 +98,10 @@ namespace InstructionEngine.UI
             //Clipboard.SetText(test);
             //FormFactorSavable test2 = JsonConvert.DeserializeObject<FormFactorSavable>(test, new FormFactorConverter());
             //object o = new object();
-
+            tbChefData.KeyPress += TbChefData_KeyPress;
         }
+
+        
 
         internal void Resync()
         {
@@ -109,7 +119,7 @@ namespace InstructionEngine.UI
             InstrEngine.BackResTarget = RTFromString(cbOutputBack.SelectedItem.ToString());
             UpdateCheckedFilters();
             UpdateCheckedFilters2();
-
+            PushChef();
             EngineSpec.ResumeAndPush();
         }
 
@@ -118,7 +128,7 @@ namespace InstructionEngine.UI
             var arc = InstructionLib.GetArc(cbArchitecture.SelectedItem.ToString());
             if(arc != null)
             {
-                UpdateCheckedListBox(arc);
+                UpdateCheckedListBoxes(arc);
             }
         }
 
@@ -173,15 +183,16 @@ namespace InstructionEngine.UI
 
         private EngineMethod EMFromString(string str)
         {
-            switch (str)
-            {
-                case "ReggieRotate":
-                    return EngineMethod.ReggieRotate;
-                case "Bleed":
-                    return EngineMethod.Bleed;
-                default:
-                    return EngineMethod.Bleed;
-            }
+            return (EngineMethod)Enum.Parse(typeof(EngineMethod), str);
+            //switch (str)
+            //{
+            //    case "ReggieRotate":
+            //        return EngineMethod.ReggieRotate;
+            //    case "Bleed":
+            //        return EngineMethod.Bleed;
+            //    default:
+            //        return EngineMethod.Bleed;
+            //}
         }
 
         void LoadInstructions()
@@ -207,12 +218,12 @@ namespace InstructionEngine.UI
                 }
 
                 cbArchitecture.SelectedIndex = 0;
-                UpdateCheckedListBox(InstructionLib.GetArc(cbArchitecture.SelectedItem.ToString()));
+                UpdateCheckedListBoxes(InstructionLib.GetArc(cbArchitecture.SelectedItem.ToString()));
                 UpdateCheckedFilters();
             }
         }
 
-        void UpdateCheckedListBox(List<InstructionDef> instructionDefs)
+        void UpdateCheckedListBoxes(List<InstructionDef> instructionDefs)
         {
             updatingCheckboxes = true;
             //Filters 1
@@ -220,7 +231,7 @@ namespace InstructionEngine.UI
             clbFilters.Items.Clear();
             foreach (var item in instructionDefs)
             {
-                clbFilters.Items.Add(item, true);
+                clbFilters.Items.Add(item, false);
             }
             clbFilters.ResumeLayout();
 
@@ -308,5 +319,44 @@ namespace InstructionEngine.UI
         {
             InstrEngine.ExcludeMatchedRegs = cbExclusive.Checked;
         }
+
+        private void TbChefData_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == '\r')
+            {
+                e.Handled = true;
+                PushChef();
+            }
+        }
+
+
+        void PushChef()
+        {
+            try
+            {
+                List<Ingredient> ingredients = new List<Ingredient>();
+
+                var ingrStrs = tbChefData.Text.Split('|');
+                foreach (var ingr in ingrStrs)
+                {
+                    var p = ingr.Split(',');
+                    string[] pars = new string[p.Length - 1];
+                    Array.Copy(p, 1, pars, 0, pars.Length);
+                    ingredients.Add(new Ingredient(p[0], pars));
+                }
+                List<InstructionDef> instrs = new List<InstructionDef>();
+                foreach (var instr in clbFilters.CheckedItems)
+                {
+                    instrs.Add((InstructionDef)instr);
+                }
+
+                InstrEngine.ChefParams = new IngredientList("Test", instrs, ingredients);
+            }
+            catch (Exception ex)
+            {
+                new object();
+            }
+        }
+
     }
 }

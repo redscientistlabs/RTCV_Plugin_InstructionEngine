@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,8 @@ namespace InstructionEngine.Data.Json
     public class FieldSavable
     {
         public string Name { get; set; }
-        public ulong Mask { get; set; }
+        [JsonConverter(typeof(FormFactorFieldConverter))]
+        public long Mask { get; set; }
         public string[] Tags { get; set; }
         public FieldSavable() { }
 

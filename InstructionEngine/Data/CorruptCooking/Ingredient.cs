@@ -22,5 +22,11 @@ namespace InstructionEngine.Data.CorruptCooking
             StepName = stepName;
             Parameters = parameters;
         }
+
+        public Ingredient(string stepName, params string[] parameters)
+        {
+            StepName = stepName;
+            Parameters = parameters.ToList();
+        }
     }
 }

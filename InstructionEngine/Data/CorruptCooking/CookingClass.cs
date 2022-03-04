@@ -17,10 +17,6 @@ namespace InstructionEngine.Data.CorruptCooking
         //    //cookbook
         //}
 
-        
-
-
-
         /// <summary>
         /// "Compile" into delegate list
         /// </summary>
@@ -32,7 +28,7 @@ namespace InstructionEngine.Data.CorruptCooking
             foreach (var list in shoppingLists)
             {
                 List<RecipeStep> steps = new List<RecipeStep>();
-                steps.Add(new RecipeStep(Chef.ResetRecipe, null));
+                //steps.Add(new RecipeStep(Chef.ResetRecipe, null)); //Make state clean
 
                 foreach (var ingredient in list.Ingredients)
                 {
@@ -41,7 +37,12 @@ namespace InstructionEngine.Data.CorruptCooking
                         case nameof(Chef.ResetRecipe):
                             steps.Add(new RecipeStep(Chef.ResetRecipe, null));
                             continue;
-
+                        case nameof(Chef.FindAround):
+                            steps.Add(new RecipeStep(Chef.FindAround, ingredient.Parameters.ToArray()));
+                            continue;
+                        case nameof(Chef.AddressWarp):
+                            steps.Add(new RecipeStep(Chef.AddressWarp, ingredient.Parameters.ToArray()));
+                            continue;
                         default:
                             break;
                     }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Newtonsoft.Json;
 namespace InstructionEngine.Data
 {
     [Serializable]
@@ -12,10 +12,11 @@ namespace InstructionEngine.Data
     {
         public string Name { get; set; }
         public FieldSavable[] Fields { get; set; }
+        public string[] Tags { get; set; }
 
 
         public FormFactorSavable() { }
-        //public FormFactorSavable(string name, ulong outputRegister, params ulong[] inputRegisters)
+        //public FormFactorSavable(string name, long outputRegister, params long[] inputRegisters)
         //{
         //    Name = name;
         //    OutputRegister = outputRegister;

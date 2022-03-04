@@ -9,9 +9,9 @@ namespace InstructionEngine
 {
     internal static class RHelper
     {
-        public static ulong AddressDifference(long addrFrom, long addrTo, ulong offset)
+        public static long AddressDifference(long addrFrom, long addrTo, long offset)
         {
-            return (ulong)((long)offset + (addrTo-addrFrom));
+            return (long)((long)offset + (addrTo-addrFrom));
         }
 
 

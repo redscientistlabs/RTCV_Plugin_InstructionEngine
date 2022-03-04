@@ -11,8 +11,7 @@ namespace InstructionEngine.Data.CorruptCooking
 {
     public static class ChefAssistant
     {
-        public static List<TargetData> GatherTargets(long addr, List<InstructionDef> filter, MemoryInterface mi, int lookAmt, int precision, bool forwards,
-            string[] ffTags = null, string[] registerTags = null, string[] regNames = null)
+        public static List<TargetData> GatherTargets(long addr, List<InstructionDef> filter, MemoryInterface mi, int lookAmt, int precision, bool forwards)
         {
             var outData = new List<TargetData>();
             for (int i = 0; i < lookAmt; i++)
@@ -32,7 +31,7 @@ namespace InstructionEngine.Data.CorruptCooking
                         bytes = bytes.FlipBytes();
                     }
 
-                    ulong convertedData = InstrEngine.BytesToUlong(bytes);
+                    long convertedData = InstrEngine.BytesTolong(bytes);
                     TargetData targData = null;
                     for (int j = 0; j < filter.Count; j++)
                     {
@@ -45,33 +44,33 @@ namespace InstructionEngine.Data.CorruptCooking
 
                     if (targData != null)
                     {
-                        if(ffTags != null && ffTags.Length > 0)
-                        {
-                            foreach (var tag in ffTags)
-                            {
-                                if (targData.HasTag(tag)) goto Success;
-                            }
-                        }
+                    //    if(ffTags != null && ffTags.Length > 0)
+                    //    {
+                    //        foreach (var tag in ffTags)
+                    //        {
+                    //            if (targData.HasTag(tag)) goto Success;
+                    //        }
+                    //    }
 
-                        if(registerTags != null && registerTags.Length > 0)
-                        {
-                            foreach (var tag in registerTags)
-                            {
-                                if (targData.HasTag(tag)) goto Success;
-                            }
-                        }
+                    //    if(registerTags != null && registerTags.Length > 0)
+                    //    {
+                    //        foreach (var tag in registerTags)
+                    //        {
+                    //            if (targData.HasTag(tag)) goto Success;
+                    //        }
+                    //    }
 
-                        if (regNames != null && regNames.Length > 0)
-                        {
-                            foreach (var name in regNames)
-                            {
-                                if (targData.HasRegister(name)) goto Success;
-                            }
-                        }
+                    //    if (regNames != null && regNames.Length > 0)
+                    //    {
+                    //        foreach (var name in regNames)
+                    //        {
+                    //            if (targData.HasRegister(name)) goto Success;
+                    //        }
+                    //    }
 
-                        continue;
+                    //    continue;
 
-                    Success:
+                    //Success:
                         outData.Add(targData);
                     }
 

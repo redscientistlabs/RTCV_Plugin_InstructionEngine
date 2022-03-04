@@ -14,8 +14,8 @@ namespace InstructionEngine.Data
         [Exclude]
         static Random rand = new Random();
 
-        int outputRegisterIndex = -1;
-        public FieldInfo OutputRegister => outputRegisterIndex > -1 ? registers[outputRegisterIndex] : null;
+        private int outputRegisterIndex = -1;
+        public FieldInfo OutputRegister => outputRegisterIndex > -1 ? fields[outputRegisterIndex] : null;
         int[] inputRegisterIndices = null;
 
         public HashSet<string> Tags { get; private set; } = new HashSet<string>();
@@ -29,7 +29,7 @@ namespace InstructionEngine.Data
                     List<FieldInfo> inputRegisters = new List<FieldInfo>();
                     foreach (var ind in inputRegisterIndices)
                     {
-                        inputRegisters.Add(registers[ind]);
+                        inputRegisters.Add(fields[ind]);
                     }
                     return inputRegisters;
                 }
@@ -41,35 +41,22 @@ namespace InstructionEngine.Data
 
         }
 
-        private FieldInfo[] registers;
         private FieldInfo[] fields;
+        private FieldInfo[] registers;
+        //Number of fields will be low
+        private Dictionary<string, FieldInfo> fieldNameDict = new Dictionary<string, FieldInfo>();
+        private Dictionary<string, List<FieldInfo>> fieldTagDict = new Dictionary<string, List<FieldInfo>>();
 
-        public FieldInfo[] Registers => registers;
+        public FieldInfo[] Fields => fields;
         public FieldFormFactor() { }
-        //public RegisterFormFactor(ulong outputRegister, params ulong[] registers)
-        //{
-        //    if (registers != null)
-        //    {
-        //        FFEs = new RegisterInfo[registers.Length+1];
-        //        FFEs[0] = new RegisterInfo(outputRegister);
-        //        for (int i = 0; i < registers.Length; i++)
-        //        {
-        //            FFEs[i+1] = new RegisterInfo(registers[i]);
-        //        }
-        //    }
-        //    else 
-        //    {
-        //        FFEs = new RegisterInfo[1] { new RegisterInfo(outputRegister) };
-        //    }
-        //}
 
         public FieldFormFactor(FieldInfo[] fieldInfos)
         {
-            registers = fieldInfos.Where(x=>x.HasTag("Register")).ToArray();
-            fields = fieldInfos.Where(x => !x.HasTag("Register")).ToArray();
+            fields = fieldInfos;
+            registers = fieldInfos.Where(x=> x.HasTag("Register")).ToArray();
             int ind = -1;
             var output = registers.FirstOrDefault(x => { ind++; return x.HasTag("Output"); });
-            if(output != default(FieldInfo))
+            if (output != null)
             {
                 outputRegisterIndex = ind;
             }
@@ -91,22 +78,40 @@ namespace InstructionEngine.Data
             {
                inputRegisterIndices = inputIndices.ToArray();
             }
+
+            for (int i = 0; i < fieldInfos.Length; i++)
+            {
+                fieldNameDict[fieldInfos[i].Name] = fieldInfos[i]; //Dictionary for quick lookup
+                string[] ftags = fieldInfos[i].Tags.ToArray();
+                for (int j = 0; j < ftags.Length; j++)
+                {
+                    if(fieldTagDict.TryGetValue(ftags[j], out List<FieldInfo> fieldsWithTag))
+                    {
+                        fieldsWithTag.Add(fieldInfos[i]);
+                    }
+                    else
+                    {
+                        fieldTagDict[ftags[j]] = new List<FieldInfo>() { fieldInfos[i] };
+                    }
+                }
+            }
+
         }
 
-        public ulong ExtractRandomRegister(ulong data)
+        public long ExtractRandomRegister(long data)
         {
-            return registers[rand.Next(registers.Length)].Extract(data);
+            return fields[rand.Next(fields.Length)].Extract(data);
         }
 
-        public ulong RandomInject(ulong data, ulong register)
+        public long RandomInject(long data, long register)
         {
-            var ffe = registers[rand.Next(registers.Length)];
+            var ffe = fields[rand.Next(fields.Length)];
             return ffe.Inject(data, register);
         }
 
         public FieldInfo[] GetWithTag(string tag)
         {
-            return registers.Where(x => x.HasTag(tag)).ToArray();
+            return fields.Where(x => x.HasTag(tag)).ToArray();
         }
 
         public bool HasTag(string tag)
@@ -116,18 +121,18 @@ namespace InstructionEngine.Data
 
         public bool RegistersHasTag(string tag)
         {
-            foreach (var register in registers)
+            foreach (var register in fields)
             {
                 if (register.HasTag(tag)) return true;
             }
             return false;
         }
 
-        public ulong InjectAt(int registerId, ulong data, ulong registerData)
+        public long InjectAt(int registerId, long data, long registerData)
         {
             try
             {
-                var ffe = registers[registerId];
+                var ffe = fields[registerId];
                 return ffe.Inject(data, registerData);
             }
             catch
@@ -136,23 +141,23 @@ namespace InstructionEngine.Data
             }
         }
 
-        public ulong InjectAll(ulong data, ulong[] registers)
+        public long InjectAll(long data, long[] registers)
         {
-            for (int i = 0; i < this.registers.Length; i++)
+            for (int i = 0; i < this.fields.Length; i++)
             {
-                data = this.registers[i].Inject(data, registers[rand.Next(registers.Length)]);
+                data = this.fields[i].Inject(data, registers[rand.Next(registers.Length)]);
             }
             return data;
         }
 
-        public ulong InjectOutput(ulong data, ulong[] registers)
+        public long InjectOutput(long data, long[] registers)
         {
             if (outputRegisterIndex == -1) return data;
             //data = this.registers[OUTPUT_REG].Inject(data, registers[rand.Next(registers.Length)]);
-            data = this.registers[outputRegisterIndex].Inject(data, registers[rand.Next(registers.Length)]);
+            data = this.fields[outputRegisterIndex].Inject(data, registers[rand.Next(registers.Length)]);
             return data;
         }
-        public ulong InjectInputs(ulong data, ulong[] registers)
+        public long InjectInputs(long data, long[] registers)
         {
             //for (int i = 1; i < this.registers.Length; i++)
             //{
@@ -161,39 +166,39 @@ namespace InstructionEngine.Data
             if (inputRegisterIndices == null) return data;
             for (int i = 0; i < inputRegisterIndices.Length; i++)
             {
-                data = this.registers[i].Inject(data, registers[rand.Next(registers.Length)]);
+                data = this.fields[i].Inject(data, registers[rand.Next(registers.Length)]);
             }
             return data;
         }
 
-        public ulong InjectAllUnique(ulong data, ulong[] registersIn)
+        public long InjectAllUnique(long data, long[] registersIn)
         {
-            List<ulong> registers = new List<ulong>(registersIn);
-            for (int i = 0; i < this.registers.Length; i++)
+            List<long> registers = new List<long>(registersIn);
+            for (int i = 0; i < this.fields.Length; i++)
             {
                 if (registers.Count == 0) return data;
                 int ind = rand.Next(registers.Count);
-                data = this.registers[i].Inject(data, registers[ind]);
+                data = this.fields[i].Inject(data, registers[ind]);
                 registers.RemoveAt(ind);
             }
             return data;
         }
 
-        public ulong InjectInputsUnique(ulong data, ulong[] registersIn)
+        public long InjectInputsUnique(long data, long[] registersIn)
         {
-            List<ulong> registers = new List<ulong>(registersIn);
-            for (int i = 1; i < this.registers.Length; i++)
+            List<long> registers = new List<long>(registersIn);
+            for (int i = 1; i < this.fields.Length; i++)
             {
                 if (registers.Count == 0) return data;
                 int ind = rand.Next(registers.Count);
-                data = this.registers[i].Inject(data, registers[ind]);
+                data = this.fields[i].Inject(data, registers[ind]);
                 registers.RemoveAt(ind);
             }
             return data;
         }
 
 
-        public ulong Inject(ulong data, RegisterTarget target, ulong[] registers, bool unique = false)
+        public long Inject(long data, RegisterTarget target, long[] registers, bool unique = false)
         {
             switch (target)
             {
@@ -208,35 +213,35 @@ namespace InstructionEngine.Data
             }
         }
 
-        public ulong[] ExtractAll(ulong data, ulong sub = 0)
+        public long[] ExtractAll(long data, long sub = 0)
         {
-            ulong[] ret = new ulong[registers.Length];
-            for (int i = 0; i < registers.Length; i++)
+            long[] ret = new long[fields.Length];
+            for (int i = 0; i < fields.Length; i++)
             {
-                ret[i] = registers[i].Extract(data);
+                ret[i] = fields[i].Extract(data);
             }
             return ret;
         }
 
-        public ulong[] ExtractInputs(ulong data, ulong sub = 0)
+        public long[] ExtractInputs(long data, long sub = 0)
         {
-            if(registers.Length <= 1)
+            if(fields.Length <= 1)
             {
                 return null;
             }
 
-            ulong[] ret = new ulong[registers.Length-1];
-            for (int i = 1; i < registers.Length; i++)
+            long[] ret = new long[fields.Length-1];
+            for (int i = 1; i < fields.Length; i++)
             {
-                ret[i] = registers[i].Extract(data);
+                ret[i] = fields[i].Extract(data);
             }
             return ret;
         }
 
-        public ulong[] ExtractWithTag(ulong data, string tag)
+        public long[] ExtractWithTag(long data, string tag)
         {
-            var regs = registers.Where(x => x.HasTag(tag)).ToArray();
-            ulong[] ret = new ulong[regs.Length];
+            var regs = fields.Where(x => x.HasTag(tag)).ToArray();
+            long[] ret = new long[regs.Length];
             for (int i = 0; i < regs.Length; i++)
             {
                 ret[i] = regs[i].Extract(data);
@@ -244,9 +249,9 @@ namespace InstructionEngine.Data
             return ret;
         }
 
-        public ulong? ExtractByName(ulong data, string name)
+        public long? ExtractByName(long data, string name)
         {
-            var regs = registers.FirstOrDefault(x => x.Name == name);
+            var regs = fields.FirstOrDefault(x => x.Name == name);
             if(regs != null)
             {
                 return regs.Extract(data);
@@ -257,10 +262,10 @@ namespace InstructionEngine.Data
             }
         }
 
-        public ulong[] ExtractAllMatching(ulong data, string tag, int matchSize)
+        public long[] ExtractAllMatching(long data, string tag, int matchSize)
         {
-            var regs = registers.Where(x => x.HasTag(tag) && x.BitsTotal == matchSize).ToArray();
-            ulong[] ret = new ulong[regs.Length];
+            var regs = fields.Where(x => x.HasTag(tag) && x.BitsTotal == matchSize).ToArray();
+            long[] ret = new long[regs.Length];
             for (int i = 0; i < regs.Length; i++)
             {
                 ret[i] = regs[i].Extract(data);
@@ -268,10 +273,10 @@ namespace InstructionEngine.Data
             return ret;
         }
 
-        public ulong[] ExtractWithSize(ulong data, int matchSize)
+        public long[] ExtractWithSize(long data, int matchSize)
         {
-            var regs = registers.Where(x => x.BitsTotal == matchSize).ToArray();
-            ulong[] ret = new ulong[regs.Length];
+            var regs = fields.Where(x => x.BitsTotal == matchSize).ToArray();
+            long[] ret = new long[regs.Length];
             for (int i = 0; i < regs.Length; i++)
             {
                 ret[i] = regs[i].Extract(data);
@@ -279,16 +284,16 @@ namespace InstructionEngine.Data
             return ret;
         }
 
-        public ulong[] Extract(ulong data, RegisterTarget targetRegisters, int matchSize = -1)
+        public long[] Extract(long data, RegisterTarget targetRegisters, int matchSize = -1)
         {
-            ulong[] ret = null;
+            long[] ret = null;
             switch (targetRegisters)
             {
                 case RegisterTarget.All:
                     if (matchSize > 0)
                     {
-                        var validRegs = registers.Where(x => x.BitsTotal == matchSize);
-                        List<ulong> extrMatchSize = new List<ulong>();
+                        var validRegs = fields.Where(x => x.BitsTotal == matchSize);
+                        List<long> extrMatchSize = new List<long>();
                         foreach (var r in validRegs)
                         {
                             extrMatchSize.Add(r.Extract(data));
@@ -300,10 +305,10 @@ namespace InstructionEngine.Data
                     }
                     else
                     {
-                        ret = new ulong[registers.Length];
-                        for (int i = 0; i < registers.Length; i++)
+                        ret = new long[fields.Length];
+                        for (int i = 0; i < fields.Length; i++)
                         {
-                            ret[i] = registers[i].Extract(data);
+                            ret[i] = fields[i].Extract(data);
                         }
                     }
                     break;
@@ -312,19 +317,19 @@ namespace InstructionEngine.Data
                     {
                         return null;
                     }
-                    ret = new ulong[1] { registers[outputRegisterIndex].Extract(data) };
+                    ret = new long[1] { fields[outputRegisterIndex].Extract(data) };
                     break;
                 case RegisterTarget.Inputs:
-                    ret = new ulong[registers.Length - 1];
+                    ret = new long[fields.Length - 1];
 
-                    //var retList = new List<ulong>();
-                    if (registers.Length <= 1)
+                    //var retList = new List<long>();
+                    if (fields.Length <= 1)
                     {
                         return null;
                     }
-                    for (int i = 1; i < registers.Length; i++)
+                    for (int i = 1; i < fields.Length; i++)
                     {
-                        ret[i - 1] = registers[i].Extract(data);
+                        ret[i - 1] = fields[i].Extract(data);
                         //retList.Add(FFEs[i].Extract(data, sub));
                     }
                     //ret = retList.ToArray();
@@ -334,6 +339,46 @@ namespace InstructionEngine.Data
             }
            
             return ret;
+        }
+
+        public FieldInfo GetFieldByName(string name)
+        {
+            if(fieldNameDict.TryGetValue(name, out FieldInfo value))
+            {
+                return value;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public List<FieldInfo> GetFieldsByTag(string tag)
+        {
+            if (fieldTagDict.TryGetValue(tag, out List<FieldInfo> fieldsWithTag))
+            {
+                return fieldsWithTag;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public FieldInfo this[string name]
+        {
+            // get and set accessors
+            get
+            {
+                if (fieldNameDict.TryGetValue(name, out FieldInfo value))
+                {
+                    return value;
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
 
     }

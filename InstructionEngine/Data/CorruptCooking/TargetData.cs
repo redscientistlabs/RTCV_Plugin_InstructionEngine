@@ -13,17 +13,17 @@ namespace InstructionEngine.Data.CorruptCooking
     public class TargetData
     {
         public FieldFormFactor OriginalFormFactor { get; private set; }
-        public ulong OriginalData { get; private set; }
+        public long OriginalData { get; private set; }
         public byte[] OriginalBytes { get; private set; }
         public FieldFormFactor FormFactor { get; private set; }
-        public ulong Data { get; set; }
+        public long Data { get; set; }
         public int Precision { get; private set; }
         public long Address { get; private set; }
         public MemoryInterface MemoryInterface { get; private set; }
 
         private InstructionDef instructionDef = null;
 
-        public ulong? GetFieldData(string field)
+        public long? GetFieldData(string field)
         {
             return FormFactor.ExtractByName(Data, field);
         }
@@ -43,7 +43,7 @@ namespace InstructionEngine.Data.CorruptCooking
 
         public TargetData() { }
 
-        public TargetData(InstructionDef instruction, ulong data, byte[] originalBytes, MemoryInterface memoryInterface, long address)
+        public TargetData(InstructionDef instruction, long data, byte[] originalBytes, MemoryInterface memoryInterface, long address)
         {
             OriginalFormFactor = FormFactors.GetFormFactor(instruction.FormFactor);
             FormFactor = OriginalFormFactor;
@@ -65,15 +65,20 @@ namespace InstructionEngine.Data.CorruptCooking
             return FormFactor.HasTag(tag);
         }
 
-        internal bool HasRegister(string name)
+        internal bool HasRegisterNamed(string name)
         {
-            var regs = FormFactor.Registers;
-            foreach (var reg in regs)
-            {
-                if (reg.Name == name) return true;
-            }
-            //else
-            return false;
+            return FormFactor.GetFieldByName(name) != null;
+            //var regs = FormFactor.Fields;
+            //foreach (var reg in regs)
+            //{
+            //    if (reg.Name == name) return true;
+            //}
+            ////else
+            //return false;
+        }
+        internal FieldInfo GetRegisterNamed(string name)
+        {
+            return FormFactor.GetFieldByName(name);
         }
     }
 }

@@ -187,6 +187,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BitHelper.cs" />
     <Compile Include="Data\CorruptCooking\Attributes\ChefActionInfoAttribute.cs" />
     <Compile Include="Data\CorruptCooking\Attributes\ChefActionParamAttribute.cs" />
     <Compile Include="Data\CorruptCooking\Chef.cs" />
@@ -201,7 +202,7 @@
     <Compile Include="Data\FieldInfo.cs" />
     <Compile Include="Data\CorruptCooking\Recipe.cs" />
     <Compile Include="Data\Json\FormFactorSavable.cs" />
-    <Compile Include="Data\Json\FormFactorConverter.cs" />
+    <Compile Include="Data\Json\FormFactorFieldConverter.cs" />
     <Compile Include="Data\Json\JsArr.cs" />
     <Compile Include="Data\Json\FieldSavable.cs" />
     <Compile Include="Data\RegisterTarget.cs" />

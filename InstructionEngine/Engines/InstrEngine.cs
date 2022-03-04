@@ -67,6 +67,13 @@ namespace InstructionEngine.Engines
             set { EngineSpec.Set(nameof(Subtract), value); }
         }
 
+        public static IngredientList ChefParams
+        {
+            get { return EngineSpec.Get<IngredientList>(nameof(ChefParams)); }
+            set { EngineSpec.Set(nameof(ChefParams), value); }
+        }
+
+
         private static InstructionDef ContainsValue(List<InstructionDef> entries, byte[] bytes)
         {
             if (bytes == null)
@@ -76,7 +83,7 @@ namespace InstructionEngine.Engines
 
             try
             {
-                ulong data = BytesToUlong(bytes); //Convert bytes to ulong
+                long data = BytesTolong(bytes); //Convert bytes to long
                 foreach (var e in entries)
                 {
                     if (e.Matches(data))
@@ -92,32 +99,36 @@ namespace InstructionEngine.Engines
             }
         }
 
-        public static ulong BytesToUlong(byte[] byteRef)
+        public static long BytesTolong(byte[] byteRef)
         {
             var bytes = (byte[])byteRef.Clone();
             //Fun switch of fun, but is faster for most paths than resizing to 8 bytes
             switch (bytes.Length)
             {
                 case 1:
-                    return (ulong)bytes[0];
+                    return (long)bytes[0];
                 case 2:
-                    return (ulong)BitConverter.ToUInt16(bytes, 0);
+                    return (long)BitConverter.ToUInt16(bytes, 0);
                 case 3:
-                    bytes.FlipBytes();
-                    Array.Resize(ref bytes, 4);
-                    bytes.FlipBytes();
-                    return (ulong)BitConverter.ToUInt32(bytes, 0);
+                    byte[] new3byte = new byte[8];
+                    Array.Copy(byteRef, 0, new3byte, 5, 3);
+                    //bytes.FlipBytes();
+                    //Array.Resize(ref bytes, 4);
+                    //bytes.FlipBytes();
+                    return BitConverter.ToInt64(new3byte, 0);
                 case 4:
-                    return (ulong)BitConverter.ToUInt32(bytes, 0);
+                    return (long)BitConverter.ToUInt32(bytes, 0);
                 case 5:
                 case 6:
                 case 7:
-                    bytes.FlipBytes();
-                    Array.Resize(ref bytes, 8);
-                    bytes.FlipBytes();
-                    return BitConverter.ToUInt64(bytes, 0);
+                    byte[] new7byte = new byte[8];
+                    Array.Copy(byteRef, 0, new7byte, 1, 7);
+                    //bytes.FlipBytes();
+                    //Array.Resize(ref bytes, 8);
+                    //bytes.FlipBytes();
+                    return BitConverter.ToInt64(new7byte, 0);
                 case 8:
-                    return BitConverter.ToUInt64(bytes, 0);
+                    return BitConverter.ToInt64(bytes, 0);
                 default:
                     throw new Exception("Invalid byte count in BitLogicListFilter. Limiter must be less than 64 bits (8 bytes)");
             }
@@ -158,7 +169,7 @@ namespace InstructionEngine.Engines
 
             if (instr != null)
             {
-                return new TargetData(instr, BytesToUlong(values), values, mi, startAddress);
+                return new TargetData(instr, BytesTolong(values), values, mi, startAddress);
             }
 
              return null;
@@ -189,6 +200,16 @@ namespace InstructionEngine.Engines
             forwardTarget = ForwardTarget;
             backResTarget = BackResTarget;
             forwardResTarget = ForwardResTarget;
+
+            //var recipe = CookingClass.MakeRecipes(new List<IngredientList>()
+            //{
+            //    new IngredientList("Test Ingredient List", FilterInstructions, new List<Ingredient>()
+            //    { 
+            //        new Ingredient(nameof(Chef.FindAround), bleedBack.ToString(), bleedForward.ToString(), IngredientList.MAIN, IngredientList.MAIN),
+            //        new Ingredient(nameof(Chef.AddressWarp),"BD","BD","2","1")
+            //    })
+            //})[0];
+            
 
             for (int i = 0; i < intensity; i++)
             {
@@ -249,7 +270,10 @@ namespace InstructionEngine.Engines
                             }
                             matchBytes = outValue;
                         }
-                        
+                        break;
+                    case EngineMethod.Chef:
+                        var recipe = CookingClass.MakeRecipes(new List<IngredientList>() { ChefParams })[0];
+                        matchBytes = recipe.Cook(mi, safeAddress, precision);
                         break;
                     default:
                         break;
@@ -265,7 +289,7 @@ namespace InstructionEngine.Engines
             return blastUnits.Count > 0? new BlastLayer(blastUnits) : null;
         }
 
-        public static byte[] UlongToBytes(ulong data, int precision)
+        public static byte[] LongToBytes(long data, int precision)
         {
             byte[] outValue = BitConverter.GetBytes(data);
 

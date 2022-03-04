@@ -23,7 +23,7 @@ namespace InstructionEngine.Data
                 foreach (var file in files)
                 {
                     //string groupName = Path.GetFileNameWithoutExtension(file);
-                    var entries = JsonConvert.DeserializeObject<JsArr>(File.ReadAllText(file), new FormFactorConverter());
+                    var entries = JsonConvert.DeserializeObject<JsArr>(File.ReadAllText(file));//, new FormFactorFieldConverter());
                     foreach (var entry in entries.FormFactors)
                     {
                         formFactors[entry.Name] = (FieldFormFactor)entry;

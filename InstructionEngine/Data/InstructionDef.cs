@@ -16,15 +16,15 @@ namespace InstructionEngine.Data
     [MemberConfig(TargetMember.All)]
     public class InstructionDef
     {
-        ulong template;
-        ulong reserved;
+        long template;
+        long reserved;
 
         public string FormFactor { get; private set; }
         public int Precision { get; private set; }
 
         public string Name { get; private set; }
 
-        public InstructionDef(string name, string formFactor, ulong template, ulong reserved, int precision)
+        public InstructionDef(string name, string formFactor, long template, long reserved, int precision)
         {
             this.Name = name;
             this.FormFactor = formFactor.ToUpper();
@@ -41,7 +41,7 @@ namespace InstructionEngine.Data
             Precision = 0;
         }
 
-        public bool Matches(ulong data)
+        public bool Matches(long data)
         {
             return template == (data & reserved);
         }

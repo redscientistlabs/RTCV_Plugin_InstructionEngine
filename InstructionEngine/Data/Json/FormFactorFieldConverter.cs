@@ -9,20 +9,20 @@ using System.Threading.Tasks;
 
 namespace InstructionEngine.Data.Json
 {
-    public class FormFactorConverter : JsonConverter
+    public class FormFactorFieldConverter : JsonConverter
     {
         public override bool CanRead => true;
         public override bool CanWrite => false;
-        public override bool CanConvert(Type type) => type == typeof(ulong) || type == typeof(HashSet<string>);
+        public override bool CanConvert(Type type) => type == typeof(long) || type == typeof(HashSet<string>);
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             throw new NotImplementedException();
             //try
             //{
-            //    if (value is ulong)
+            //    if (value is long)
             //    {
-            //        ulong number = (ulong)value;
+            //        long number = (long)value;
             //        string numRep = Convert.ToString((long)number, 2);
             //        if (numRep.Length <= 32) numRep = numRep.PadLeft(32, '0');
             //        else { numRep = numRep.PadLeft(64, '0'); }
@@ -50,7 +50,7 @@ namespace InstructionEngine.Data.Json
                     List<string> items = token.ToObject<List<string>>();
                     try
                     {
-                        return items.Select(x => Convert.ToUInt64(x.Replace("_", "").Substring(2), 2)).ToArray();
+                        return items.Select(x => Convert.ToInt64(x.Replace("_", "").Substring(2), 2)).ToArray();
                     }
                     catch(FormatException)
                     {
@@ -70,7 +70,7 @@ namespace InstructionEngine.Data.Json
                         case JsonToken.String:
                             try
                             {
-                                return Convert.ToUInt64(((string)jValue).Replace("_","").Substring(2), 2);
+                                return Convert.ToInt64(((string)jValue).Replace("_","").Substring(2), 2);
                             }
                             catch
                             {

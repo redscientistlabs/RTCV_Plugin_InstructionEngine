@@ -31,7 +31,6 @@ namespace InstructionEngine.UI
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.clbFilters2 = new System.Windows.Forms.CheckedListBox();
             this.cbArchitecture = new System.Windows.Forms.ComboBox();
-            this.label5 = new System.Windows.Forms.Label();
             this.cbOutputForward = new System.Windows.Forms.ComboBox();
             this.cbOutputBack = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -51,6 +50,7 @@ namespace InstructionEngine.UI
             this.cbInstrMethod = new System.Windows.Forms.ComboBox();
             this.label13 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
+            this.tbChefData = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nmBleedForward)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmBleedBack)).BeginInit();
@@ -60,9 +60,9 @@ namespace InstructionEngine.UI
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.groupBox1.Controls.Add(this.tbChefData);
             this.groupBox1.Controls.Add(this.clbFilters2);
             this.groupBox1.Controls.Add(this.cbArchitecture);
-            this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.cbOutputForward);
             this.groupBox1.Controls.Add(this.cbOutputBack);
             this.groupBox1.Controls.Add(this.label4);
@@ -121,17 +121,6 @@ namespace InstructionEngine.UI
             this.cbArchitecture.TabIndex = 186;
             this.cbArchitecture.Tag = "color:normal";
             this.cbArchitecture.ValueMember = "Value";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Italic);
-            this.label5.ForeColor = System.Drawing.Color.White;
-            this.label5.Location = new System.Drawing.Point(125, 73);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(41, 13);
-            this.label5.TabIndex = 185;
-            this.label5.Text = "Output";
             // 
             // cbOutputForward
             // 
@@ -232,7 +221,7 @@ namespace InstructionEngine.UI
             this.cbExclusive.AutoSize = true;
             this.cbExclusive.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Italic);
             this.cbExclusive.ForeColor = System.Drawing.Color.White;
-            this.cbExclusive.Location = new System.Drawing.Point(190, 58);
+            this.cbExclusive.Location = new System.Drawing.Point(218, 64);
             this.cbExclusive.Name = "cbExclusive";
             this.cbExclusive.Size = new System.Drawing.Size(67, 17);
             this.cbExclusive.TabIndex = 179;
@@ -260,7 +249,7 @@ namespace InstructionEngine.UI
             this.cbUniqueRegisters.AutoSize = true;
             this.cbUniqueRegisters.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Italic);
             this.cbUniqueRegisters.ForeColor = System.Drawing.Color.White;
-            this.cbUniqueRegisters.Location = new System.Drawing.Point(190, 43);
+            this.cbUniqueRegisters.Location = new System.Drawing.Point(218, 46);
             this.cbUniqueRegisters.Name = "cbUniqueRegisters";
             this.cbUniqueRegisters.Size = new System.Drawing.Size(60, 17);
             this.cbUniqueRegisters.TabIndex = 177;
@@ -299,10 +288,10 @@ namespace InstructionEngine.UI
             this.bDebugPush.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bDebugPush.ForeColor = System.Drawing.Color.OrangeRed;
             this.bDebugPush.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.bDebugPush.Location = new System.Drawing.Point(129, 38);
+            this.bDebugPush.Location = new System.Drawing.Point(129, 29);
             this.bDebugPush.Margin = new System.Windows.Forms.Padding(4);
             this.bDebugPush.Name = "bDebugPush";
-            this.bDebugPush.Size = new System.Drawing.Size(54, 22);
+            this.bDebugPush.Size = new System.Drawing.Size(82, 22);
             this.bDebugPush.TabIndex = 174;
             this.bDebugPush.TabStop = false;
             this.bDebugPush.Tag = "color:dark2";
@@ -364,7 +353,7 @@ namespace InstructionEngine.UI
             this.cbOutputFuture.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cbOutputFuture.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Italic);
             this.cbOutputFuture.ForeColor = System.Drawing.Color.White;
-            this.cbOutputFuture.Location = new System.Drawing.Point(190, 28);
+            this.cbOutputFuture.Location = new System.Drawing.Point(218, 28);
             this.cbOutputFuture.Name = "cbOutputFuture";
             this.cbOutputFuture.Size = new System.Drawing.Size(54, 17);
             this.cbOutputFuture.TabIndex = 170;
@@ -423,6 +412,16 @@ namespace InstructionEngine.UI
             this.label14.TabIndex = 167;
             this.label14.Text = "Instruction Stuff";
             // 
+            // tbChefData
+            // 
+            this.tbChefData.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.tbChefData.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tbChefData.ForeColor = System.Drawing.Color.White;
+            this.tbChefData.Location = new System.Drawing.Point(128, 61);
+            this.tbChefData.Name = "tbChefData";
+            this.tbChefData.Size = new System.Drawing.Size(83, 20);
+            this.tbChefData.TabIndex = 188;
+            // 
             // InstrEngineControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -462,10 +461,10 @@ namespace InstructionEngine.UI
         public System.Windows.Forms.ComboBox cbBackTarg;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label5;
         public System.Windows.Forms.ComboBox cbOutputForward;
         public System.Windows.Forms.ComboBox cbOutputBack;
         public System.Windows.Forms.ComboBox cbArchitecture;
         private System.Windows.Forms.CheckedListBox clbFilters2;
+        private System.Windows.Forms.TextBox tbChefData;
     }
 }

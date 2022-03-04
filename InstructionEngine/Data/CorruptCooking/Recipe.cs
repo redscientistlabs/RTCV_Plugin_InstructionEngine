@@ -33,7 +33,6 @@ namespace InstructionEngine.Data.CorruptCooking
             this.Filter = namedFilters[IngredientList.MAIN];
             this.steps = steps;
             NamedFilters = namedFilters;
-            NamedFilters.Remove(IngredientList.MAIN);
         }
 
         public void Reset()
@@ -51,6 +50,7 @@ namespace InstructionEngine.Data.CorruptCooking
             if (filterTarg == null) return null;
             else
             {
+                Reset();
                 FilterTarget = filterTarg;
                 for (int i = 0; i < steps.Length; i++)
                 {
@@ -61,7 +61,7 @@ namespace InstructionEngine.Data.CorruptCooking
                 }
             }
 
-            return InstrEngine.UlongToBytes(FilterTarget.Data, FilterTarget.Precision);
+            return InstrEngine.LongToBytes(FilterTarget.Data, FilterTarget.Precision);
         }
 
 
