@@ -67,7 +67,7 @@ namespace InstructionEngine.Engines
                     if(origOutputs == null || origOutputs.Length == 0) return null;
                     var origInputs = orig.FormFactor.Extract(orig.Data, RegisterTarget.Inputs);
                     var newInputs = replacement.FormFactor.GetFieldsByTag("Input");
-                    if (origInputs.Length != newInputs.Count) return null;
+                    if (origInputs is null || newInputs is null || origInputs.Length != newInputs.Count) return null;
 
                     template = replacement.FormFactor.Inject(template, RegisterTarget.Output, origOutputs);
                     template = replacement.FormFactor.Inject(template, RegisterTarget.Inputs, origInputs, true, !Shuffle);
