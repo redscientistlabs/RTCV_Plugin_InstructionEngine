@@ -20,6 +20,7 @@ namespace InstructionEngine.UI
         InstrCheckList filter2 = new InstrCheckList();
         FilterSelectForm filterForm1 = null;
         FilterSelectForm filterForm2 = null;
+
         public BleedEngineControl()
         {
             InitializeComponent();
@@ -123,8 +124,12 @@ namespace InstructionEngine.UI
             {
                 filterForm2 = new FilterSelectForm(filter2, "DONORS");
                 filterForm2.FormClosed += (o,f) => { filterForm2 = null; };
+                filterForm2.Show();
             }
-            filterForm2.Show();
+
+            filterForm1?.BringToFront();
+            filterForm2?.BringToFront();
+            
         }
 
         private void bFilter1_Click(object sender, EventArgs e)
@@ -135,10 +140,8 @@ namespace InstructionEngine.UI
                 filterForm1.FormClosed += (o, f) => { filterForm1 = null; };
                 filterForm1.Show();
             }
-            else
-            {
-                filterForm1.BringToFront();
-            }
+            filterForm1?.BringToFront();
+            filterForm2?.BringToFront();
         }
 
         private void cbOutputFuture_CheckedChanged(object sender, EventArgs e)

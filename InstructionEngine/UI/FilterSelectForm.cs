@@ -57,5 +57,10 @@ namespace InstructionEngine.UI
         {
             pMain.Controls.Clear();
         }
+
+        private void cbOnTop_CheckedChanged(object sender, EventArgs e)
+        {
+            this.TopMost = cbOnTop.Checked;
+        }
     }
 }
