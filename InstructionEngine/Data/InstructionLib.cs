@@ -9,8 +9,8 @@ namespace InstructionEngine.Data
 {
     internal static class InstructionLib
     {
-        static Dictionary<string, List<InstructionDef>> InstructionGroups = new Dictionary<string, List<InstructionDef>>();
-
+        static Dictionary<string, List<InstructionDef>> instructionGroups = new Dictionary<string, List<InstructionDef>>();
+        public static Dictionary<string, List<InstructionDef>> InstructionGroups => instructionGroups;
 
         //public static void Sync(Dictionary<string, List<InstructionDef>> instrGroups)
         //{
@@ -19,12 +19,12 @@ namespace InstructionEngine.Data
 
         public static void Add(string architecture, List<InstructionDef> instructions)
         {
-            InstructionGroups[architecture] = new List<InstructionDef>(instructions);
+            instructionGroups[architecture] = new List<InstructionDef>(instructions);
         }
 
         public static List<InstructionDef> GetArc(string architecture)
         {
-            if(InstructionGroups.TryGetValue(architecture, out List<InstructionDef> value))
+            if(instructionGroups.TryGetValue(architecture, out List<InstructionDef> value))
             {
                 return value;
             }

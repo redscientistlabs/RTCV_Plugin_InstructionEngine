@@ -9,7 +9,7 @@ namespace InstructionEngine.Data
 {
     [Serializable]
     [Ceras.MemberConfig(TargetMember.All)]
-    public class FieldFormFactor
+    public class FormFactor
     {
         [Exclude]
         static Random rand = new Random();
@@ -48,9 +48,9 @@ namespace InstructionEngine.Data
         private Dictionary<string, List<FieldInfo>> fieldTagDict = new Dictionary<string, List<FieldInfo>>();
 
         public FieldInfo[] Fields => fields;
-        public FieldFormFactor() { }
+        public FormFactor() { }
 
-        public FieldFormFactor(FieldInfo[] fieldInfos)
+        public FormFactor(FieldInfo[] fieldInfos)
         {
             fields = fieldInfos;
             registers = fieldInfos.Where(x=> x.HasTag("Register")).ToArray();
@@ -119,14 +119,34 @@ namespace InstructionEngine.Data
             return Tags.Contains(tag);
         }
 
-        public bool RegistersHasTag(string tag)
+        public bool FieldsContainTag(string tag)
         {
-            foreach (var register in fields)
+            return fieldTagDict.ContainsKey(tag);
+        }
+
+        public bool FieldsContainAnyTags(params string[] tags)
+        {
+            foreach (var tag in tags)
             {
-                if (register.HasTag(tag)) return true;
+                if (fieldTagDict.ContainsKey(tag)) return true;
             }
             return false;
         }
+
+        public bool HasFieldNamed(string tag)
+        {
+            return fieldNameDict.ContainsKey(tag);
+        }
+
+        public bool HasFieldNamed(params string[] tags)
+        {
+            foreach (var tag in tags)
+            {
+                if (fieldNameDict.ContainsKey(tag)) return true;
+            }
+            return false;
+        }
+
 
         public long InjectAt(int registerId, long data, long registerData)
         {
@@ -171,43 +191,70 @@ namespace InstructionEngine.Data
             return data;
         }
 
-        public long InjectAllUnique(long data, long[] registersIn)
+        public long InjectAllUnique(long data, long[] registersIn, bool inOrder = false)
         {
-            List<long> registers = new List<long>(registersIn);
-            for (int i = 0; i < this.fields.Length; i++)
+            if (!inOrder)
             {
-                if (registers.Count == 0) return data;
-                int ind = rand.Next(registers.Count);
-                data = this.fields[i].Inject(data, registers[ind]);
-                registers.RemoveAt(ind);
+                List<long> registers = new List<long>(registersIn);
+                for (int i = 0; i < this.fields.Length; i++)
+                {
+                    if (registers.Count == 0) return data;
+                    int ind = rand.Next(registers.Count);
+                    data = this.fields[i].Inject(data, registers[ind]);
+                    registers.RemoveAt(ind);
+                }
+                return data;
             }
-            return data;
+            else
+            {
+                for (int i = 0; i < this.fields.Length; i++)
+                {
+                    if (i >= registersIn.Length) break;
+                    data = this.fields[i].Inject(data, registersIn[i]);
+                }
+                return data;
+            }
         }
 
-        public long InjectInputsUnique(long data, long[] registersIn)
+        public long InjectInputsUnique(long data, long[] registersIn, bool inOrder = false)
         {
-            List<long> registers = new List<long>(registersIn);
-            for (int i = 1; i < this.fields.Length; i++)
-            {
-                if (registers.Count == 0) return data;
-                int ind = rand.Next(registers.Count);
-                data = this.fields[i].Inject(data, registers[ind]);
-                registers.RemoveAt(ind);
+            if (inOrder)
+            { 
+
+                List<long> registers = new List<long>(registersIn);
+                for (int i = 0; i < this.fields.Length; i++)
+                {
+                    if (i == outputRegisterIndex) continue;
+                    if (registers.Count == 0) return data;
+                    int ind = rand.Next(registers.Count);
+                    data = this.fields[i].Inject(data, registers[ind]);
+                    registers.RemoveAt(ind);
+                }
+                return data;
             }
-            return data;
+            else
+            {
+                for (int i = 0; i < this.fields.Length && i < registersIn.Length; i++)
+                {
+                    if (i == outputRegisterIndex) continue;
+                    if (i >= registersIn.Length) break;
+                    data = this.fields[i].Inject(data, registersIn[i]);
+                }
+                return data;
+            }
         }
 
 
-        public long Inject(long data, RegisterTarget target, long[] registers, bool unique = false)
+        public long Inject(long data, RegisterTarget target, long[] registers, bool unique = false, bool inOrder = false)
         {
             switch (target)
             {
                 case RegisterTarget.All:
-                    return unique ? InjectAll(data, registers) : InjectAllUnique(data, registers);
+                    return unique ? InjectAll(data, registers) : InjectAllUnique(data, registers, inOrder);
                 case RegisterTarget.Output:
                     return InjectOutput(data, registers);
                 case RegisterTarget.Inputs:
-                    return unique ? InjectInputs(data, registers) : InjectInputsUnique(data, registers);
+                    return unique ? InjectInputs(data, registers) : InjectInputsUnique(data, registers, inOrder);
                 default:
                     return 0xDEADBEEF;
             }

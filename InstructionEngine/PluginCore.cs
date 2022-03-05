@@ -42,10 +42,13 @@ namespace InstructionEngine
 
         public bool Start(RTCSide side)
         {
+            Lua.LuaManager.EnsureInitialized();
+
             if (side == RTCSide.Client)
             {
-                connectorEMU = new PluginConnectorEMU();
+                LoadInstructions();
                 FormFactors.Init();
+                connectorEMU = new PluginConnectorEMU();
 
                 LocalNetCoreRouter.Route(PluginRouting.Endpoints.RTC_SIDE, PluginRouting.Commands.REQUEST_RESYNC, true);
 
@@ -70,9 +73,11 @@ namespace InstructionEngine
             }
             else if (side == RTCSide.Server)
             {
+                LoadInstructions();
+                FormFactors.Init();
                 connectorRTC = new PluginConnectorRTC();
-                var form = new InstrEngineControl();
-                S.SET<InstrEngineControl>(form);
+                var form = new InstrEngineHolder();
+                S.SET<InstrEngineHolder>(form);
                 form.TopLevel = false;
 
                 S.GET<CorruptionEngineForm>().RegisterPluginEngine(new InstrEngine(form));
@@ -81,8 +86,32 @@ namespace InstructionEngine
                 //Regather settings
             }
             CurrentSide = side;
+
+
+
             return true;
         }
+
+
+        void LoadInstructions()
+        {
+            if (Directory.Exists(PluginCore.InstructionPath))
+            {
+                var files = Directory.GetFiles(PluginCore.InstructionPath);
+                List<string> arcNames = new List<string>();
+                foreach (var file in files)
+                {
+                    var entries = FilterReader.ReadEntries(file);
+                    if (entries != null)
+                    {
+                        string arcName = Path.GetFileNameWithoutExtension(file).Trim('_', ' ');
+                        arcNames.Add(arcName);
+                        InstructionLib.Add(arcName, entries);
+                    }
+                }
+            }
+        }
+
 
         internal static string GetOtherSide()
         {

@@ -90,7 +90,7 @@ namespace InstructionEngine.Engines
 
         static HashSet<long> usedRegisters = new HashSet<long>();
         //TODO:Refactor
-        private byte[] Bleed(List<InstructionDef> bleedEntries, MemoryInterface mi, FieldFormFactor initialFormFactor,
+        private byte[] Bleed(List<InstructionDef> bleedEntries, MemoryInterface mi, FormFactor initialFormFactor,
             bool smart, bool unique, bool exclude,
             int bleedBack, int bleedForward, long addr, int precision, byte[] passthrough)
         {
@@ -217,14 +217,14 @@ namespace InstructionEngine.Engines
                     {
                         if (bleedEntries[j].Matches(bytesAtAddr))
                         {
-                            ff = bleedEntries[j].FormFactor;
+                            ff = bleedEntries[j].FormFactorString;
                             break;
                         }
                     }
 
                     if (ff != null)
                     {
-                        if (FormFactors.TryGetValue(ff, out FieldFormFactor matchedFF))
+                        if (FormFactors.TryGetValue(ff, out FormFactor matchedFF))
                         {
                             if (matchedFF != null)
                             {

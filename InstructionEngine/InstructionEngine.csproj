@@ -191,7 +191,7 @@
     <Compile Include="Data\CorruptCooking\Attributes\ChefActionInfoAttribute.cs" />
     <Compile Include="Data\CorruptCooking\Attributes\ChefActionParamAttribute.cs" />
     <Compile Include="Data\CorruptCooking\Chef.cs" />
-    <Compile Include="Data\CorruptCooking\ChefAssistant.cs" />
+    <Compile Include="InstrHelper.cs" />
     <Compile Include="Data\CorruptCooking\CookingClass.cs" />
     <Compile Include="Data\CorruptCooking\Ingredient.cs" />
     <Compile Include="Data\CorruptCooking\IngredientList.cs" />
@@ -207,20 +207,57 @@
     <Compile Include="Data\Json\FieldSavable.cs" />
     <Compile Include="Data\RegisterTarget.cs" />
     <Compile Include="Data\FormFactors.cs" />
-    <Compile Include="Data\InstrEngineSettings.cs" />
     <Compile Include="Data\FilterReader.cs" />
     <Compile Include="Data\InstructionLib.cs" />
-    <Compile Include="Data\FieldFormFactor.cs" />
+    <Compile Include="Data\FormFactor.cs" />
     <Compile Include="Engines\BleedEngine.cs" />
+    <Compile Include="Engines\ChefEngine.cs" />
+    <Compile Include="Engines\InsertEngine.cs" />
     <Compile Include="Engines\InstrEngine.cs" />
     <Compile Include="MathExtensions.cs" />
     <Compile Include="PluginCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="RHelper.cs" />
     <Compile Include="Routing\PluginConnectorEMU.cs" />
     <Compile Include="Routing\PluginConnectorRTC.cs" />
     <Compile Include="Routing\RoutingConstants.cs" />
     <Compile Include="Data\InstructionDef.cs" />
+    <Compile Include="UI\BleedEngineControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\BleedEngineControl.Designer.cs">
+      <DependentUpon>BleedEngineControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\FilterSelectForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\FilterSelectForm.Designer.cs">
+      <DependentUpon>FilterSelectForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\IInstrEngineSettings.cs" />
+    <Compile Include="UI\InsertEngineControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\InsertEngineControl.Designer.cs">
+      <DependentUpon>InsertEngineControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\InstrCheckList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\InstrCheckList.Designer.cs">
+      <DependentUpon>InstrCheckList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\InstrEngineHolder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\InstrEngineHolder.Designer.cs">
+      <DependentUpon>InstrEngineHolder.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\InstrEngineControl.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -229,6 +266,25 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\BleedEngineControl.resx">
+      <DependentUpon>BleedEngineControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\FilterSelectForm.resx">
+      <DependentUpon>FilterSelectForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\InsertEngineControl.resx">
+      <DependentUpon>InsertEngineControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\InstrCheckList.resx">
+      <DependentUpon>InstrCheckList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\InstrEngineHolder.resx">
+      <DependentUpon>InstrEngineHolder.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\InstrEngineControl.resx">
       <DependentUpon>InstrEngineControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -253,6 +309,14 @@
     <ProjectReference Include="..\..\RTCV\Source\Libraries\PluginHost\PluginHost.csproj">
       <Project>{3f02eda3-6949-4b30-9cda-b56ffba0e976}</Project>
       <Name>PluginHost</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\RTCV_Plugin_Lua\Lua\Lua.csproj">
+      <Project>{9f12c598-f610-4cdc-96cf-f69b9fd3d357}</Project>
+      <Name>Lua</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\RTCV_Plugin_Lua\LunarBind\Source\LunarBindNetFramework\LunarBindNetFramework.csproj">
+      <Project>{0ad5d929-b842-4df4-bd29-80d9c406a2e0}</Project>
+      <Name>LunarBindNetFramework</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

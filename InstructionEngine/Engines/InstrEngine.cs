@@ -200,6 +200,7 @@ namespace InstructionEngine.Engines
             forwardTarget = ForwardTarget;
             backResTarget = BackResTarget;
             forwardResTarget = ForwardResTarget;
+            //bool insertShuffle = InsertEngine.Shuffle;
 
             //var recipe = CookingClass.MakeRecipes(new List<IngredientList>()
             //{
@@ -209,6 +210,19 @@ namespace InstructionEngine.Engines
             //        new Ingredient(nameof(Chef.AddressWarp),"BD","BD","2","1")
             //    })
             //})[0];
+            Recipe recipe = null;
+            switch (method)
+            {
+                case EngineMethod.Bleed:
+                    break;
+
+                case EngineMethod.Chef:
+                    recipe = CookingClass.MakeRecipes(new List<IngredientList>() { ChefParams })[0];
+                    break;
+                default:
+                    break;
+            }
+
             
 
             for (int i = 0; i < intensity; i++)
@@ -272,8 +286,12 @@ namespace InstructionEngine.Engines
                         }
                         break;
                     case EngineMethod.Chef:
-                        var recipe = CookingClass.MakeRecipes(new List<IngredientList>() { ChefParams })[0];
-                        matchBytes = recipe.Cook(mi, safeAddress, precision);
+                        matchBytes = recipe?.Cook(mi, address, precision);
+                        //matchBytes = ChefEngine.Cook(filter, mi, safeAddress, precision);
+                        //matchBytes = recipe.Cook(mi, safeAddress, precision);
+                        break;
+                    case EngineMethod.Inserter:
+                        matchBytes = InsertEngine.Corrupt(mi, address, precision);
                         break;
                     default:
                         break;
@@ -289,24 +307,7 @@ namespace InstructionEngine.Engines
             return blastUnits.Count > 0? new BlastLayer(blastUnits) : null;
         }
 
-        public static byte[] LongToBytes(long data, int precision)
-        {
-            byte[] outValue = BitConverter.GetBytes(data);
 
-            Array.Resize(ref outValue, precision);
-
-            if (outValue.Length < precision)
-            {
-                outValue = outValue.PadLeft(precision);
-            }
-            else if (outValue.Length > precision)
-            {
-                outValue.FlipBytes(); //Flip the bytes (stored as little endian)
-                Array.Resize(ref outValue, precision); //Truncate
-                outValue.FlipBytes(); //Flip them back
-            }
-            return outValue;
-        }
 
 
         string ICorruptionEngine.ToString() => "Misassembly Engine";

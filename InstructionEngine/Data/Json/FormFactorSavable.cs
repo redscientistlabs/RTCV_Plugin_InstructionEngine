@@ -23,9 +23,9 @@ namespace InstructionEngine.Data
         //    InputRegisters = inputRegisters;
         //}
 
-        public static explicit operator FieldFormFactor(FormFactorSavable a)
+        public static explicit operator FormFactor(FormFactorSavable a)
         {
-            return new FieldFormFactor(a.Fields.Select(x => (FieldInfo)x).ToArray());
+            return new FormFactor(a.Fields.Select(x => (FieldInfo)x).ToArray());
         }
     }
 }

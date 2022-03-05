@@ -61,7 +61,7 @@ namespace InstructionEngine.Data.CorruptCooking
                 }
             }
 
-            return InstrEngine.LongToBytes(FilterTarget.Data, FilterTarget.Precision);
+            return InstrHelper.LongToBytes(FilterTarget.Data, FilterTarget.Precision);
         }
 
 

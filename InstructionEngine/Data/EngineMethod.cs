@@ -12,6 +12,7 @@ namespace InstructionEngine.Data
         Bleed = 0,
         ReggieRotate = 1,
         Chef = 2,
+        Inserter = 3,
 
     }
 }

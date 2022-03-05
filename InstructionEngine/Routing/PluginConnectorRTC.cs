@@ -33,7 +33,7 @@ namespace InstructionEngine
                     EngineSpec.Sync(data);
                     break;
                 case PluginRouting.Commands.REQUEST_RESYNC:
-                    S.GET<InstrEngineControl>().Resync();
+                    S.GET<InstrEngineHolder>().Resync();
                     break;
                 default:
                     break;

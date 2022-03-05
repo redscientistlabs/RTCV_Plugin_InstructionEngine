@@ -12,11 +12,14 @@ namespace InstructionEngine.Data.CorruptCooking
     [Ceras.MemberConfig(TargetMember.All)]
     public class TargetData
     {
-        public FieldFormFactor OriginalFormFactor { get; private set; }
+        public FormFactor OriginalFormFactor { get; private set; }
         public long OriginalData { get; private set; }
         public byte[] OriginalBytes { get; private set; }
-        public FieldFormFactor FormFactor { get; private set; }
-        public long Data { get; set; }
+        public FormFactor FormFactor { get; private set; }
+        /// <summary>
+        /// The thing you work on
+        /// </summary>
+        public long Data;
         public int Precision { get; private set; }
         public long Address { get; private set; }
         public MemoryInterface MemoryInterface { get; private set; }
@@ -37,7 +40,7 @@ namespace InstructionEngine.Data.CorruptCooking
             set
             {
                 Instruction = value;
-                FormFactor = FormFactors.GetFormFactor(value.FormFactor);
+                FormFactor = FormFactors.GetFormFactor(value.FormFactorString);
             }
         }
 
@@ -45,7 +48,7 @@ namespace InstructionEngine.Data.CorruptCooking
 
         public TargetData(InstructionDef instruction, long data, byte[] originalBytes, MemoryInterface memoryInterface, long address)
         {
-            OriginalFormFactor = FormFactors.GetFormFactor(instruction.FormFactor);
+            OriginalFormFactor = FormFactors.GetFormFactor(instruction.FormFactorString);
             FormFactor = OriginalFormFactor;
             instructionDef = instruction;
             Data = data;

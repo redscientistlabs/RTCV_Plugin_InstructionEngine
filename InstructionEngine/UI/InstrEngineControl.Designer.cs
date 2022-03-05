@@ -29,6 +29,7 @@ namespace InstructionEngine.UI
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.tbChefData = new System.Windows.Forms.TextBox();
             this.clbFilters2 = new System.Windows.Forms.CheckedListBox();
             this.cbArchitecture = new System.Windows.Forms.ComboBox();
             this.cbOutputForward = new System.Windows.Forms.ComboBox();
@@ -50,7 +51,6 @@ namespace InstructionEngine.UI
             this.cbInstrMethod = new System.Windows.Forms.ComboBox();
             this.label13 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
-            this.tbChefData = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nmBleedForward)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nmBleedBack)).BeginInit();
@@ -88,6 +88,16 @@ namespace InstructionEngine.UI
             this.groupBox1.TabIndex = 168;
             this.groupBox1.TabStop = false;
             this.groupBox1.Tag = "color:dark1";
+            // 
+            // tbChefData
+            // 
+            this.tbChefData.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
+            this.tbChefData.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tbChefData.ForeColor = System.Drawing.Color.White;
+            this.tbChefData.Location = new System.Drawing.Point(128, 61);
+            this.tbChefData.Name = "tbChefData";
+            this.tbChefData.Size = new System.Drawing.Size(83, 20);
+            this.tbChefData.TabIndex = 188;
             // 
             // clbFilters2
             // 
@@ -411,16 +421,6 @@ namespace InstructionEngine.UI
             this.label14.Size = new System.Drawing.Size(82, 13);
             this.label14.TabIndex = 167;
             this.label14.Text = "Instruction Stuff";
-            // 
-            // tbChefData
-            // 
-            this.tbChefData.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-            this.tbChefData.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tbChefData.ForeColor = System.Drawing.Color.White;
-            this.tbChefData.Location = new System.Drawing.Point(128, 61);
-            this.tbChefData.Name = "tbChefData";
-            this.tbChefData.Size = new System.Drawing.Size(83, 20);
-            this.tbChefData.TabIndex = 188;
             // 
             // InstrEngineControl
             // 

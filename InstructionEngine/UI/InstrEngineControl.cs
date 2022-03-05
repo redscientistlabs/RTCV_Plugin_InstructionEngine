@@ -17,6 +17,10 @@ namespace InstructionEngine.UI
     using Newtonsoft.Json;
     using InstructionEngine.Data.CorruptCooking;
 
+
+    /// <summary>
+    /// Old crappy code, do not use
+    /// </summary>
     public partial class InstrEngineControl : ComponentForm, IColorize
     {
 
@@ -66,7 +70,7 @@ namespace InstructionEngine.UI
             cbForwardTarg.Items.Add(RegisterTarget.All.ToString());
             cbOutputForward.Items.Add(RegisterTarget.All.ToString());
             cbOutputBack.Items.Add(RegisterTarget.All.ToString());
-
+            
             cbBackTarg.Items.Add(RegisterTarget.Inputs.ToString());
             cbForwardTarg.Items.Add(RegisterTarget.Inputs.ToString());
             cbOutputForward.Items.Add(RegisterTarget.Inputs.ToString());
@@ -197,30 +201,30 @@ namespace InstructionEngine.UI
 
         void LoadInstructions()
         {          
-            if (Directory.Exists(PluginCore.InstructionPath))
-            {
-                var files = Directory.GetFiles(PluginCore.InstructionPath);
-                List<string> arcNames = new List<string>();
-                foreach (var file in files)
-                {
-                    var entries = FilterReader.ReadEntries(file);
-                    if (entries != null)
-                    {
-                        string arcName = Path.GetFileNameWithoutExtension(file).Trim('_',' ');
-                        arcNames.Add(arcName);
-                        InstructionLib.Add(arcName, entries);                       
-                    }
-                }
+            //if (Directory.Exists(PluginCore.InstructionPath))
+            //{
+            //    var files = Directory.GetFiles(PluginCore.InstructionPath);
+            //    List<string> arcNames = new List<string>();
+            //    foreach (var file in files)
+            //    {
+            //        var entries = FilterReader.ReadEntries(file);
+            //        if (entries != null)
+            //        {
+            //            string arcName = Path.GetFileNameWithoutExtension(file).Trim('_',' ');
+            //            arcNames.Add(arcName);
+            //            InstructionLib.Add(arcName, entries);                       
+            //        }
+            //    }
 
-                foreach (var arc in arcNames)
-                {
-                    cbArchitecture.Items.Add(arc);
-                }
+            //    foreach (var arc in arcNames)
+            //    {
+            //        cbArchitecture.Items.Add(arc);
+            //    }
 
-                cbArchitecture.SelectedIndex = 0;
-                UpdateCheckedListBoxes(InstructionLib.GetArc(cbArchitecture.SelectedItem.ToString()));
-                UpdateCheckedFilters();
-            }
+            //    cbArchitecture.SelectedIndex = 0;
+            //    UpdateCheckedListBoxes(InstructionLib.GetArc(cbArchitecture.SelectedItem.ToString()));
+            //    UpdateCheckedFilters();
+            //}
         }
 
         void UpdateCheckedListBoxes(List<InstructionDef> instructionDefs)
@@ -231,7 +235,7 @@ namespace InstructionEngine.UI
             clbFilters.Items.Clear();
             foreach (var item in instructionDefs)
             {
-                clbFilters.Items.Add(item, false);
+                clbFilters.Items.Add(item, true);
             }
             clbFilters.ResumeLayout();
 
@@ -357,6 +361,5 @@ namespace InstructionEngine.UI
                 new object();
             }
         }
-
     }
 }

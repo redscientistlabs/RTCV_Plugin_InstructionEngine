@@ -11,8 +11,8 @@ namespace InstructionEngine.Data
 {
     internal class FormFactors
     {
-        private static Dictionary<string, FieldFormFactor> formFactors =
-            new Dictionary<string, FieldFormFactor>();
+        private static Dictionary<string, FormFactor> formFactors =
+            new Dictionary<string, FormFactor>();
 
         public static void Init()
         {
@@ -26,22 +26,15 @@ namespace InstructionEngine.Data
                     var entries = JsonConvert.DeserializeObject<JsArr>(File.ReadAllText(file));//, new FormFactorFieldConverter());
                     foreach (var entry in entries.FormFactors)
                     {
-                        formFactors[entry.Name] = (FieldFormFactor)entry;
-                        //groupByInfo[entry.Name] = groupName;
+                        formFactors[entry.Name] = (FormFactor)entry;
                     }
-                    //if (entries != null)
-                    //{
-                    //    string arcName = Path.GetFileNameWithoutExtension(file).Trim('_', ' ');
-                    //    arcNames.Add(arcName);
-                    //    InstructionLib.Add(arcName, entries);
-                    //}
                 }
             }
         }
 
-        public static FieldFormFactor GetFormFactor(string key)
+        public static FormFactor GetFormFactor(string key)
         {
-            if(formFactors.TryGetValue(key, out FieldFormFactor value))
+            if(formFactors.TryGetValue(key, out FormFactor value))
             {
                 return value;
             }
@@ -51,7 +44,7 @@ namespace InstructionEngine.Data
             }
         }
 
-        public static bool TryGetValue(string key, out FieldFormFactor value)
+        public static bool TryGetValue(string key, out FormFactor value)
         {
             return formFactors.TryGetValue(key, out value);
         }
