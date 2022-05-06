@@ -95,6 +95,7 @@ namespace InstructionEngine.Engines
             }
             catch (Exception ex)
             {
+                _ = ex;
                 return null;
             }
         }

@@ -358,6 +358,7 @@ namespace InstructionEngine.UI
             }
             catch (Exception ex)
             {
+                _ = ex;
                 new object();
             }
         }

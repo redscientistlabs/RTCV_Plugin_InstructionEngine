@@ -23,7 +23,7 @@ namespace InstructionEngine.UI
         BleedEngineControl bleedEngineControl;
         InsertEngineControl insertEngineControl;
 
-        UserControl curSettingsC = null;
+        //UserControl curSettingsC = null;
         IInstrEngineSettings currentSettings = null;
         public InstrEngineHolder() 
         {

@@ -79,6 +79,7 @@ namespace InstructionEngine.Data
             }
             catch (Exception e)
             {
+                _ = e;
                 return null;
             }
         }
